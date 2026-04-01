@@ -12,8 +12,7 @@ Stworzenie w pełni funkcjonalnego MVP (Minimum Viable Product) w ciągu **2 tyg
 | Rola | Osoba | Zadania |
 | :--- | :--- | :--- |
 | **Frontend** | Cristiano Ronaldo, Marcin | React/Vue UI, Integracja API, Kanban |
-| **Backend** | Wrona, Bartek | API, Baza danych, Autoryzacja |
-| **CI/CD Pipelines** | Hubert | Automatyzacja wdrożeń, Docker, GitHub Actions |
+| **Backend** | Wrona, Bartek, Hubert | API, Baza danych, Autoryzacja |
 | **QA** | Mikołaj | Testy automatyczne, Manualna weryfikacja |
 | **UX/UI** | Maciek | Makiety, Design System, Logika przepływu |
 
