@@ -55,3 +55,7 @@ Stworzenie w pełni funkcjonalnego MVP (Minimum Viable Product) w ciągu **2 tyg
 3. **Faza 3 (Szlif):** Optymalizacja wydajności, "Nice to have".
 
 ---
+
+## 📄 Dokumentacja
+
+- [Baza danych](backend/docs/DATABASE.md) – tabele, relacje, seed
