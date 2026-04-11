@@ -1,6 +1,6 @@
-# 🚀 LanczBad – System Zarządzania Projektami
+# 🚀 Launchpad – System Zarządzania Projektami
 
-**LanczBad** to nowoczesny klon narzędzi takich jak Jira czy Trello, skupiający się na maksymalnej efektywności pracy zespołowej dzięki interaktywnej tablicy Kanban.
+**Launchpad** to nowoczesny klon narzędzi takich jak Jira czy Trello, skupiający się na maksymalnej efektywności pracy zespołowej dzięki interaktywnej tablicy Kanban.
 
 ## 🎯 Cel projektu
 Stworzenie w pełni funkcjonalnego MVP (Minimum Viable Product) w ciągu **2 tygodni**, umożliwiającego zespołom planowanie, śledzenie i realizację zadań w ustrukturyzowany sposób.
