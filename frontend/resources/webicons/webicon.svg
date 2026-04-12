@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="255.99998"
+   height="255.99998"
+   viewBox="0 0 67.733328 67.733329"
+   version="1.1"
+   id="svg1"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Warstwa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="font-variation-settings:'wght' 400;fill:#263238;fill-opacity:1;stroke-width:0.793751;stroke-linejoin:round;stroke-miterlimit:10;paint-order:fill markers stroke"
+       id="rect36"
+       width="67.73333"
+       height="67.73333"
+       x="1.3635254e-06"
+       y="1.3635254e-06"
+       rx="0"
+       ry="0" />
+    <g
+       id="g1"
+       transform="matrix(5.4894265,0,0,5.4894265,-284.49202,-473.34331)"
+       style="stroke-width:0.182169">
+      <path
+         style="font-size:18.4619px;line-height:1.2;font-family:Nasalization;-inkscape-font-specification:'Nasalization, @wght=400';font-variation-settings:'wght' 400;letter-spacing:0px;text-orientation:upright;fill:#f3f0ea;fill-opacity:1;stroke-width:0.144596;stroke-linejoin:round;stroke-miterlimit:10;paint-order:fill markers stroke"
+         d="m 54.668264,89.142671 v 4.262783 c 0,1.301983 0.675101,2.247127 2.401432,2.247127 h 2.594317 V 94.51455 h -2.526807 c -1.022297,0 -1.330914,-0.491856 -1.330914,-1.118739 v -4.25314 z"
+         id="path43" />
+      <path
+         style="font-size:18.4619px;line-height:1.2;font-family:Nasalization;-inkscape-font-specification:'Nasalization, @wght=400';font-variation-settings:'wght' 400;letter-spacing:0px;text-orientation:upright;fill:#34ae79;fill-opacity:1;stroke-width:0.144596;stroke-linejoin:round;stroke-miterlimit:10;paint-order:fill markers stroke"
+         d="m 59.68851,90.310708 c 0.160413,0 0.222356,0.0776 0.271113,0.20696 l 0.730025,1.936879 h 1.208424 l -0.787389,-2.072068 c -0.236547,-0.6225 -0.446727,-1.239808 -1.417013,-1.239808 -0.970285,0 -1.157445,0.51118 -1.376647,1.066119 l -0.887074,2.245757 h 1.20089 l 0.763216,-1.935797 c 0.05479,-0.138966 0.134043,-0.208042 0.294455,-0.208042 z"
+         id="path44"
+         sodipodi:nodetypes="zsccszsccsz" />
+    </g>
+  </g>
+</svg>
