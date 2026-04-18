@@ -56,6 +56,25 @@ Stworzenie w pełni funkcjonalnego MVP (Minimum Viable Product) w ciągu **2 tyg
 
 ---
 
+## 🚀 Uruchomienie backendu
+
+```bash
+cd backend
+python -m venv venv          # tylko za pierwszym razem
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+API dostępne pod `http://localhost:8000`, dokumentacja Swagger: `http://localhost:8000/docs`
+
+Opcjonalnie — załaduj dane testowe:
+```bash
+python -m app.database
+```
+
+---
+
 ## 📄 Dokumentacja
 
 - [Baza danych](backend/docs/DATABASE.md) – tabele, relacje, seed
