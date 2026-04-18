@@ -1,9 +1,19 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .database import ensure_default_admin
 from .routers import auth
 
-app = FastAPI(title="Launchpad")
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    ensure_default_admin()
+    yield
+
+
+app = FastAPI(title="Launchpad", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,3 +34,4 @@ def health():
 
 
 app.include_router(auth.router)
+

@@ -1,10 +1,11 @@
 import hashlib
 import os
 
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, select
 from sqlalchemy.orm import sessionmaker
 
 from .models import Base, User, Project, ProjectMember, Task, Label
+from .auth.utils import hash_password
 
 
 def init_db(url: str = "sqlite:///launchpad.db") -> sessionmaker:
@@ -360,6 +361,22 @@ SessionLocal = init_db()
 def get_db():
     with SessionLocal() as session:
         yield session
+
+
+def ensure_default_admin():
+    email = os.getenv("DEFAULT_ADMIN_EMAIL", "admin@admin.com")
+    password = os.getenv("DEFAULT_ADMIN_PASSWORD", "admin")
+
+    with SessionLocal() as db:
+        has_admin = db.scalar(select(User).where(User.role == "admin"))
+        if not has_admin:
+            db.add(User(
+                email=email,
+                password_hash=hash_password(password),
+                full_name="Admin",
+                role="admin",
+            ))
+            db.commit()
 
 
 if __name__ == "__main__":
