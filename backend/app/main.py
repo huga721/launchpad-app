@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .routers import auth
+
 app = FastAPI(title="Launchpad")
 
 app.add_middleware(
@@ -19,3 +21,6 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "healthy"}
+
+
+app.include_router(auth.router)

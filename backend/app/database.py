@@ -1,4 +1,5 @@
 import hashlib
+import os
 
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
@@ -7,7 +8,8 @@ from .models import Base, User, Project, ProjectMember, Task, Label
 
 
 def init_db(url: str = "sqlite:///launchpad.db") -> sessionmaker:
-    engine = create_engine(url, echo=True)
+    echo = os.getenv("SQL_ECHO", "false").lower() == "true"
+    engine = create_engine(url, echo=echo)
 
     @event.listens_for(engine, "connect")
     def _pragmas(conn, _):
@@ -352,7 +354,14 @@ def seed(session):
     print("Seed complete")
 
 
+SessionLocal = init_db()
+
+
+def get_db():
+    with SessionLocal() as session:
+        yield session
+
+
 if __name__ == "__main__":
-    SessionLocal = init_db()
     with SessionLocal() as s:
         seed(s)
