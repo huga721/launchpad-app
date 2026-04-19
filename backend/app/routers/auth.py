@@ -7,6 +7,7 @@ from ..dependencies import DB, CurrentUser
 from ..models.user import User
 from ..schemas.auth import (
     LoginRequest,
+    PublicUserResponse,
     RegisterRequest,
     TokenResponse,
     UpdateMeRequest,
@@ -52,3 +53,12 @@ def update_me(body: UpdateMeRequest, current_user: CurrentUser, db: DB):
         current_user.password_hash = hash_password(body.password)
     db.commit()
     return current_user
+
+
+@router.get("/users", response_model=list[PublicUserResponse])
+def list_users(db: DB, current_user: CurrentUser, search: str = ""):
+    query = select(User.id, User.full_name)
+    if search:
+        query = query.where(User.full_name.ilike(f"%{search}%"))
+    rows = db.execute(query).all()
+    return [PublicUserResponse(id=r.id, full_name=r.full_name) for r in rows]

@@ -32,3 +32,8 @@ class UserResponse(BaseModel):
 class UpdateMeRequest(BaseModel):
     full_name: str | None = None
     password: str | None = None
+
+
+class PublicUserResponse(BaseModel):
+    id: str
+    full_name: str

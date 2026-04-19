@@ -90,6 +90,20 @@ API używa JWT Bearer Token — token uzyskasz przez `POST /auth/login` lub `POS
 
 ---
 
+## 📁 Projekty i role
+
+Każdy zalogowany użytkownik może tworzyć projekty (`POST /projects`). Twórca automatycznie otrzymuje rolę `owner`.
+
+| Rola | Uprawnienia |
+|------|-------------|
+| `owner` | CRUD projektu, zarządzanie członkami, edycja i dodawanie tasków |
+| `editor` | edycja i dodawanie tasków |
+| `viewer` | tylko odczyt projektu i tasków |
+
+Globalny `admin` ma dostęp do wszystkich operacji owner-level niezależnie od swojej roli w projekcie.
+
+---
+
 ## 📄 Dokumentacja
 
 - [Baza danych](backend/docs/DATABASE.md) – tabele, relacje, seed
