@@ -73,6 +73,15 @@ Opcjonalnie — załaduj dane testowe:
 python -m app.database
 ```
 
+Przy pierwszym starcie serwer automatycznie tworzy konto admina (jeśli żaden admin nie istnieje):
+
+| pole | domyślnie |
+|------|-----------|
+| email | `admin@admin.com` |
+| hasło | `admin` |
+
+Nadpisz przez zmienne środowiskowe `DEFAULT_ADMIN_EMAIL` i `DEFAULT_ADMIN_PASSWORD` (patrz `.env.example`).
+
 ---
 
 ## 📄 Dokumentacja
