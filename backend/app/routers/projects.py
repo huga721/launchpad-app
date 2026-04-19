@@ -12,6 +12,7 @@ from app.schemas.projects import (
     ProjectCreate,
     ProjectResponse,
     ProjectUpdate,
+    UpdateMemberRequest,
 )
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -148,6 +149,35 @@ def add_member(project_id: str, body: AddMemberRequest, db: DB, current_user: Cu
         email=target_user.email,
         role=new_member.role,
         joined_at=new_member.joined_at,
+    )
+
+
+@router.patch("/{project_id}/members/{user_id}", response_model=MemberResponse)
+def update_member_role(project_id: str, user_id: str, body: UpdateMemberRequest, db: DB, current_user: CurrentUser):
+    _require_project(db, project_id)
+    membership = _require_membership(db, project_id, current_user.id)
+    _require_owner(membership, current_user)
+    target = _get_membership(db, project_id, user_id)
+    if not target:
+        raise HTTPException(status_code=404, detail="Member not found")
+    if target.role == "owner" and body.role != "owner":
+        owner_count = db.scalar(
+            select(func.count()).select_from(ProjectMember).where(
+                ProjectMember.project_id == project_id,
+                ProjectMember.role == "owner",
+            )
+        )
+        if owner_count <= 1:
+            raise HTTPException(status_code=409, detail="Cannot demote the last owner")
+    target.role = body.role
+    db.commit()
+    db.refresh(target)
+    return MemberResponse(
+        user_id=target.user_id,
+        full_name=target.user.full_name,
+        email=target.user.email,
+        role=target.role,
+        joined_at=target.joined_at,
     )
 
 

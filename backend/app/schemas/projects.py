@@ -36,3 +36,7 @@ class MemberResponse(BaseModel):
 class AddMemberRequest(BaseModel):
     user_id: str
     role: Literal["owner", "editor", "viewer"] = "editor"
+
+
+class UpdateMemberRequest(BaseModel):
+    role: Literal["owner", "editor", "viewer"]
