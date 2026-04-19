@@ -13,7 +13,15 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(title="Launchpad", lifespan=lifespan)
+app = FastAPI(
+    title="Launchpad",
+    lifespan=lifespan,
+    description=(
+        "Protected endpoints require `Authorization: Bearer <token>`.\n\n"
+        "Obtain a token via `POST /auth/login` or `POST /auth/register`.\n\n"
+        "`/admin/*` endpoints additionally require the `admin` role."
+    ),
+)
 
 app.add_middleware(
     CORSMiddleware,

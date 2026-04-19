@@ -84,6 +84,12 @@ Nadpisz przez zmienne środowiskowe `DEFAULT_ADMIN_EMAIL` i `DEFAULT_ADMIN_PASSW
 
 ---
 
+## 🔐 Autoryzacja
+
+API używa JWT Bearer Token — token uzyskasz przez `POST /auth/login` lub `POST /auth/register`, a następnie dołączasz go do każdego chronionego żądania jako nagłówek `Authorization: Bearer <token>`. Endpointy `/admin/*` wymagają dodatkowo roli `admin`. Szczegóły w [Swagger UI](http://localhost:8000/docs).
+
+---
+
 ## 📄 Dokumentacja
 
 - [Baza danych](backend/docs/DATABASE.md) – tabele, relacje, seed
