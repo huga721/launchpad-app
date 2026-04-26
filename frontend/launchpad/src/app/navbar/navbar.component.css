@@ -1,0 +1,133 @@
+:host {
+  display: block;
+}
+
+/* Main colors from mockup */
+.lp-navbar-wrapper {
+  --lp-bg-dark: #243542;
+  --lp-bg-light: #f4f3ef;
+  --lp-accent: #39b37f;
+  --lp-text-light: #f5f6f7;
+  --lp-text-dark: #1f2a31;
+  --lp-border-dark: #2d3e49;
+}
+
+.lp-topbar {
+  background: linear-gradient(90deg, #213541 0%, #253743 50%, #223340 100%);
+  min-height: 72px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lp-topbar-left,
+.lp-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 120px;
+}
+
+.lp-topbar-left {
+  justify-content: flex-start;
+}
+
+.lp-topbar-right {
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.lp-topbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+}
+
+.lp-logo {
+  height: 38px;
+  width: auto;
+  display: block;
+}
+
+.lp-icon-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.lp-icon-btn img {
+  width: 23px;
+  height: 23px;
+  object-fit: contain;
+  display: block;
+}
+
+.lp-subbar {
+  min-height: 72px;
+  background: var(--lp-bg-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #ddd8cd;
+}
+
+.lp-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lp-tab {
+  border: 4px solid var(--lp-border-dark);
+  border-bottom-width: 0;
+  background: var(--lp-bg-light);
+  color: var(--lp-text-dark);
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1;
+  padding: 10px 16px 9px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.lp-tab-active {
+  background: var(--lp-border-dark);
+  color: var(--lp-text-light);
+}
+
+.lp-project-name {
+  color: var(--lp-accent);
+  font-size: clamp(1.4rem, 2.8vw, 2.9rem);
+  font-weight: 700;
+  line-height: 1;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Responsive tweak */
+@media (max-width: 992px) {
+  .lp-subbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .lp-project-name {
+    text-align: left;
+    white-space: normal;
+  }
+}

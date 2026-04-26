@@ -1,0 +1,37 @@
+<header class="lp-navbar-wrapper">
+  <!-- Top dark bar -->
+  <nav class="navbar lp-topbar px-3 px-md-4">
+    <div class="lp-topbar-left">
+      <button type="button" class="btn lp-icon-btn" aria-label="Menu" (click)="toggleSidebar()">
+        <img src="assets/icon/Icon_menu.svg" alt="" />
+      </button>
+    </div>
+
+    <div class="lp-topbar-center">
+      <!-- Podmień na swoje logo jeśli chcesz -->
+      <img class="lp-logo" src="assets/logo/Logo_light.svg" alt="Launchpad" />
+    </div>
+
+    <div class="lp-topbar-right">
+      <button type="button" class="btn lp-icon-btn" aria-label="Home">
+        <img src="assets/icon/Icon_home.svg" alt="" />
+      </button>
+      <button type="button" class="btn lp-icon-btn" aria-label="User">
+        <img src="assets/icon/Icon_user.svg" alt="" />
+      </button>
+    </div>
+  </nav>
+
+  <!-- Bottom light bar with tabs + project name -->
+  <div class="lp-subbar px-3 px-md-4">
+    <div class="lp-tabs">
+      <button type="button" class="lp-tab lp-tab-active">Kanban Table</button>
+      <button type="button" class="lp-tab">User Management</button>
+    </div>
+
+    <div class="lp-project-name">
+      Super fajna nazwa projektu
+    </div>
+  </div>
+</header>
+<app-project-menu *ngIf="sidebarOpen" (close)="sidebarOpen = false"></app-project-menu>

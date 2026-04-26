@@ -1,0 +1,67 @@
+:host {
+  display: block;
+}
+
+.lp-bg {
+  background-color: #2b3a47;
+}
+
+.lp-logo-text {
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: #e8e4dc;
+  letter-spacing: -0.02em;
+}
+
+.lp-card {
+  background-color: #f0ece3;
+  border-radius: 12px !important;
+}
+
+.lp-title {
+  color: #1a2530;
+}
+
+.lp-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #3a4a58;
+}
+
+.lp-input-addon {
+  background-color: #2b3a47;
+  border: none;
+  border-radius: 8px 0 0 8px !important;
+}
+
+.lp-input {
+  background-color: #2b3a47;
+  border: none;
+  border-radius: 0 8px 8px 0 !important;
+  color: #e8e4dc;
+}
+
+.lp-input::placeholder {
+  color: #6b8090;
+}
+
+.lp-input:focus {
+  background-color: #2b3a47;
+  color: #e8e4dc;
+  box-shadow: 0 0 0 2px rgba(62, 207, 142, 0.35);
+}
+
+.lp-btn-login {
+  background: none;
+  border: none;
+  color: #3ecf8e;
+  font-weight: 600;
+  padding: 0;
+  font-size: 0.95rem;
+  transition: gap 0.2s, opacity 0.2s;
+}
+
+.lp-btn-login:hover {
+  color: #3ecf8e;
+  opacity: 0.8;
+}
