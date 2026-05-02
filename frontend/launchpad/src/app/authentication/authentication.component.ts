@@ -31,7 +31,7 @@ export class AuthenticationComponent {
 
     this.authenticationService.authenticateUser(authRequest).subscribe({
       next: (result) => {
-        console.log('Authenticated user ' + result);
+        console.log('Authenticated user ' + result.access_token);
         this.router.navigate(['/board'])
       },
       error: (err) => {

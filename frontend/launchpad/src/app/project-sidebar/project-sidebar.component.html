@@ -1,0 +1,50 @@
+<div class="sidebar-backdrop-custom" (click)="closeSidebar()"></div>
+<div class="sidebar">
+
+  <div class="sidebar-header">
+    <h4>Projekty</h4>
+  </div>
+
+  <div class="sidebar-body">
+    <ul class="project-list">
+      <li *ngFor="let project of projects" (click)="selectProject(project)">
+        {{ project.name }}
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="#" class="add-project-button" (click)="$event.preventDefault(); showModal = true">
+      <i class="bi bi-plus-square"></i>
+    </a>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showModal" (click)="showModal = false">
+
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>Nowy Projekt</h5>
+    </div>
+
+    <form [formGroup]="createProjectForm" (ngSubmit)="addProject()">
+      <div class="modal-body">
+
+        <div class="form-row">
+          <label class="form-label">Nazwa Projektu</label>
+          <input class="form-input" type="text" formControlName="projectName">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Opis Projektu</label>
+          <input class="form-input" type="text" formControlName="projectDescription">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" (click)="addProject()">Dodaj Projekt</button>
+      </div>
+
+    </form>
+  </div>
+
+</div>

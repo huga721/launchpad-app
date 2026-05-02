@@ -17,9 +17,11 @@ export class AuthenticationService {
   authenticateUser(authRequest: AuthRequest): Observable<AuthResponse> {
     return this.httpClient.post<AuthResponse>(`${this.apiUrl}/auth/login`, authRequest)
       .pipe(
-        tap(response => this.accessToken = response.accessToken)
+        tap(response => this.accessToken = response.access_token)
       );
   }
 
-  
+  getAccessToken(): string {
+    return this.accessToken
+  }
 }

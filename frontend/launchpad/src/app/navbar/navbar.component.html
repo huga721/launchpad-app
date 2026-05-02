@@ -8,7 +8,6 @@
     </div>
 
     <div class="lp-topbar-center">
-      <!-- Podmień na swoje logo jeśli chcesz -->
       <img class="lp-logo" src="assets/logo/Logo_light.svg" alt="Launchpad" />
     </div>
 
@@ -30,8 +29,13 @@
     </div>
 
     <div class="lp-project-name">
-      Super fajna nazwa projektu
+      {{ activeProject?.name }}
     </div>
   </div>
 </header>
-<app-project-menu *ngIf="sidebarOpen" (close)="sidebarOpen = false"></app-project-menu>
+
+<app-project-sidebar
+  *ngIf="sidebarOpen"
+  (selectedProject)="onProjectSelected($event)"
+  (sidebarClose)="sidebarOpen = false">
+</app-project-sidebar>

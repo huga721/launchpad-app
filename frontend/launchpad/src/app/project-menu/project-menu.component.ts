@@ -1,16 +1,23 @@
-import { Component, EventEmitter, Output, ViewEncapsulation } from '@angular/core';
+import {Component, EventEmitter, OnInit, Output, ViewEncapsulation} from '@angular/core';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {NgForOf, NgIf} from "@angular/common";
+import {ProjectService} from "../services/project/project.service";
+import {CreateProjectRequest, ProjectModel} from "../model/project-dto";
 
 @Component({
   selector: 'app-project-menu',
   standalone: true,
-  imports: [],
+  imports: [
+    FormsModule,
+    NgIf,
+    ReactiveFormsModule,
+    NgForOf
+  ],
   templateUrl: './project-menu.component.html',
   styleUrls: ['./project-menu.component.css']
 })
 export class ProjectMenuComponent {
-  @Output() close = new EventEmitter<void>();
 
-  closeSidebar(): void {
-    this.close.emit();
-  }
+  constructor(private projectService: ProjectService) {}
+
 }
