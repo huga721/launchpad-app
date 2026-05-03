@@ -6,6 +6,7 @@ from .project import Project
 from .project_member import ProjectMember
 from .task import Task
 from .label import Label
+from .comment import Comment
 
 __all__ = [
     "Base",
@@ -16,4 +17,5 @@ __all__ = [
     "ProjectMember",
     "Task",
     "Label",
+    "Comment",
 ]

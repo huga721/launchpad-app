@@ -4,7 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import ensure_default_admin
-from .routers import admin, auth, projects
+from .routers import admin, auth, projects, tasks, labels, comments
+
 
 
 @asynccontextmanager
@@ -44,4 +45,6 @@ def health():
 app.include_router(auth.router)
 app.include_router(admin.router)
 app.include_router(projects.router)
-
+app.include_router(tasks.router)
+app.include_router(labels.router)
+app.include_router(comments.router)
