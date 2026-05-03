@@ -1,9 +1,71 @@
-<app-navbar></app-navbar>
+<div class="app-wrapper">
+  <app-navbar></app-navbar>
 
-<div *ngIf="activeProject != null">
-  <h3>Selected project {{ activeProject.name }}</h3>
-</div>
+  <div class="board-main">
 
-<div *ngIf="activeProject == null">
-  <h3>Select project</h3>
+    <div *ngIf="activeProject != null">
+      <h3>Selected project {{ activeProject.name }}</h3>
+
+    </div>
+
+    <div class="column-container" *ngIf="activeProject == null">
+      <div class="task-column">
+
+        <div class="task-column-header">
+          <h4>Backlog</h4>
+        </div>
+
+        <div class="task-column-footer">
+          <a href="#" class="add-project-button" (click)="$event.preventDefault()">
+            <i class="bi bi-plus-square"></i>
+          </a>
+        </div>
+
+      </div>
+
+      <div class="task-column">
+
+        <div class="task-column-header">
+          <h4>In progress</h4>
+        </div>
+
+
+        <div class="task-column-footer">
+          <a href="#" class="add-project-button" (click)="$event.preventDefault()">
+            <i class="bi bi-plus-square"></i>
+          </a>
+        </div>
+
+      </div>
+
+      <div class="task-column">
+
+        <div class="task-column-header">
+          <h4>Done</h4>
+        </div>
+
+        <div class="task-column-footer">
+          <a href="#" class="add-project-button" (click)="$event.preventDefault()">
+            <i class="bi bi-plus-square"></i>
+          </a>
+        </div>
+
+      </div>
+
+      <div class="task-column">
+
+        <div class="task-column-header">
+          <h4>Recent changes</h4>
+        </div>
+
+        <div class="task-column-footer">
+          <a href="#" class="add-project-button" (click)="$event.preventDefault()">
+            <i class="bi bi-plus-square"></i>
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
 </div>

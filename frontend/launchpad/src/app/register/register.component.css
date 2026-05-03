@@ -65,19 +65,11 @@
   display: flex;
 }
 
-.lp-input-addon {
-  background-color: #2b3a47;
-  border-radius: 8px 0 0 8px;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-}
-
 .lp-input {
   flex: 1;
   background-color: #2b3a47;
   border: none;
-  border-radius: 0 8px 8px 0;
+  border-radius: 8px;
   color: #e8e4dc;
   padding: 10px 12px;
   font-size: 0.95rem;

@@ -9,20 +9,19 @@
   <div class="lp-card">
     <div class="lp-card-body">
 
-      <h4 class="lp-title">Login</h4>
+      <h4 class="lp-title">Register</h4>
 
-      <form [formGroup]="loginForm" (ngSubmit)="authenticateUser()">
+      <form [formGroup]="registerForm" (ngSubmit)="registerUser()">
 
+        <!-- Full name -->
+        <div class="lp-field">
+          <label class="lp-label" for="full-name">Full Name</label>
+          <input id="full-name" class="lp-input" type="text" formControlName="fullName" placeholder="John Doe">
+        </div>
         <!-- Email -->
         <div class="lp-field">
           <label for="username" class="lp-label">E-mail</label>
           <div class="lp-input-group">
-            <span class="lp-input-addon">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="8" r="4" stroke="#3ecf8e" stroke-width="1.8"/>
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#3ecf8e" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
-            </span>
             <input id="username" formControlName="username" type="email"
                    class="lp-input" placeholder="johndoe@example.com">
           </div>
@@ -32,13 +31,6 @@
         <div class="lp-field">
           <label for="password" class="lp-label">Password</label>
           <div class="lp-input-group">
-            <span class="lp-input-addon">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-                <rect x="5" y="11" width="14" height="10" rx="2" stroke="#3ecf8e" stroke-width="1.8"/>
-                <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="#3ecf8e" stroke-width="1.8" stroke-linecap="round"/>
-                <circle cx="12" cy="16" r="1.5" fill="#3ecf8e"/>
-              </svg>
-            </span>
             <input id="password" formControlName="password" type="password"
                    class="lp-input" placeholder="••••••••••••">
           </div>

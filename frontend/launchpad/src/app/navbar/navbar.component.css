@@ -71,14 +71,14 @@
   display: block;
 }
 
-.lp-subbar {
+.navbar-subbar {
   min-height: 72px;
   background: var(--lp-bg-light);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 16px;
-  border-bottom: 1px solid #ddd8cd;
+  padding-left: 15px;
+  /*border-bottom: 1px solid #ddd8cd;*/
 }
 
 .lp-tabs {

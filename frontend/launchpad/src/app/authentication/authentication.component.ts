@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthenticationService } from '../services/authentication/authentication.service';
 import { AuthRequest } from '../model/authentication-dto';
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {routes} from "../app.routes";
 
 @Component({
   selector: 'app-authentication',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './authentication.component.html',
   styleUrl: './authentication.component.css'
 })
