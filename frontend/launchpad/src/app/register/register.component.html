@@ -9,44 +9,42 @@
   <div class="lp-card">
     <div class="lp-card-body">
 
-      <h4 class="lp-title">Register</h4>
+      <h4 class="lp-title">Rejestracja</h4>
 
       <form [formGroup]="registerForm" (ngSubmit)="registerUser()">
 
         <!-- Full name -->
         <div class="lp-field">
-          <label class="lp-label" for="full-name">Full Name</label>
-          <input id="full-name" class="lp-input" type="text" formControlName="fullName" placeholder="John Doe">
+          <label class="lp-label" for="full-name">Imię i nazwisko</label>
+          <input id="full-name" class="lp-input" type="text" formControlName="fullName" placeholder="Jan Kowalski">
         </div>
+
         <!-- Email -->
         <div class="lp-field">
           <label for="username" class="lp-label">E-mail</label>
-          <div class="lp-input-group">
-            <input id="username" formControlName="username" type="email"
-                   class="lp-input" placeholder="johndoe@example.com">
-          </div>
+          <input id="username" formControlName="username" type="email"
+                 class="lp-input" placeholder="jan@example.com">
         </div>
 
         <!-- Password -->
         <div class="lp-field">
-          <label for="password" class="lp-label">Password</label>
-          <div class="lp-input-group">
-            <input id="password" formControlName="password" type="password"
-                   class="lp-input" placeholder="••••••••••••">
-          </div>
+          <label for="password" class="lp-label">Hasło</label>
+          <input id="password" formControlName="password" type="password"
+                 class="lp-input" placeholder="••••••••••••">
         </div>
 
+        <!-- Error -->
+        <div class="lp-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
         <div class="lp-card-footer">
-          <!-- Register -->
           <div>
-            <button type="button" class="lp-btn" routerLink="/register">
-              Register
+            <button type="button" class="lp-btn lp-btn-secondary" routerLink="/login">
+              Masz konto? Zaloguj się
             </button>
           </div>
-          <!-- Submit -->
           <div>
-            <button type="submit" class="lp-btn">
-              Log in
+            <button type="submit" class="lp-btn" [disabled]="loading || registerForm.invalid">
+              {{ loading ? 'Rejestracja...' : 'Zarejestruj się' }}
             </button>
           </div>
         </div>
