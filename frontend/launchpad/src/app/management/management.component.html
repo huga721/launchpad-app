@@ -1,0 +1,96 @@
+<div class="mgmt-wrapper">
+
+  <div *ngIf="loading" class="mgmt-loading">Ładowanie użytkowników...</div>
+
+  <div class="mgmt-table-wrapper" *ngIf="!loading">
+    <table class="mgmt-table">
+      <thead>
+      <tr>
+        <th>Display name</th>
+        <th>E-mail</th>
+        <th>Role</th>
+        <th>Password</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.full_name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role === 'admin' ? 'Administrator' : 'User' }}</td>
+        <td>
+          <button class="reset-btn" (click)="openResetModal(user)">Reset password</button>
+        </td>
+        <td>
+          <button class="delete-btn" (click)="deleteUser(user)" title="Usuń">✕</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <!-- Dodaj usera -->
+    <div class="mgmt-add-row">
+      <button class="add-btn" (click)="openAddModal()">
+        <span class="add-btn-icon">＋</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal: Nowy użytkownik -->
+<div class="modal-overlay" *ngIf="showAddModal" (click)="closeAddModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>Nowy użytkownik</h5>
+    </div>
+    <form [formGroup]="addUserForm" (ngSubmit)="submitAddUser()">
+      <div class="modal-body">
+        <div class="form-row">
+          <label class="form-label">Imię i nazwisko *</label>
+          <input class="form-input" type="text" formControlName="full_name" placeholder="Jan Kowalski">
+        </div>
+        <div class="form-row">
+          <label class="form-label">E-mail *</label>
+          <input class="form-input" type="email" formControlName="email" placeholder="jan@example.com">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Hasło *</label>
+          <input class="form-input" type="password" formControlName="password" placeholder="••••••••">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Rola</label>
+          <select class="form-input" formControlName="role">
+            <option value="user">User</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAddModal()">Anuluj</button>
+        <button type="submit" class="btn btn-primary" [disabled]="addUserForm.invalid">Dodaj</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Reset hasła -->
+<div class="modal-overlay" *ngIf="showResetModal" (click)="closeResetModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>Reset hasła — {{ selectedUser?.full_name }}</h5>
+    </div>
+    <form [formGroup]="resetPasswordForm" (ngSubmit)="submitResetPassword()">
+      <div class="modal-body">
+        <div class="form-row">
+          <label class="form-label">Nowe hasło *</label>
+          <input class="form-input" type="password" formControlName="password" placeholder="••••••••">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeResetModal()">Anuluj</button>
+        <button type="submit" class="btn btn-primary" [disabled]="resetPasswordForm.invalid">Zapisz</button>
+      </div>
+    </form>
+  </div>
+</div>

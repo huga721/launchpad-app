@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {NgIf} from "@angular/common";
 import {ProjectSidebarComponent} from "../project-sidebar/project-sidebar.component";
 import {ProjectModel} from "../model/project-dto";
@@ -16,23 +16,28 @@ import {ProjectService} from "../services/project/project.service";
 })
 export class NavbarComponent implements OnInit {
 
+  @Output() tabChanged = new EventEmitter<'kanban' | 'management'>();
+
   sidebarOpen = false;
-
   activeProject: ProjectModel | null = null;
+  activeTab: 'kanban' | 'management' = 'kanban';
 
-  constructor(private projectService: ProjectService) {
-  }
+  constructor(private projectService: ProjectService) {}
 
   toggleSidebar(): void {
-    console.log("Current sidebar status: " + this.sidebarOpen)
-    this.sidebarOpen = !this.sidebarOpen
+    this.sidebarOpen = !this.sidebarOpen;
   }
 
   onProjectSelected(project: ProjectModel) {
-    this.activeProject = project
+    this.activeProject = project;
+  }
+
+  selectTab(tab: 'kanban' | 'management'): void {
+    this.activeTab = tab;
+    this.tabChanged.emit(tab);
   }
 
   ngOnInit(): void {
-    this.projectService.activeProject$.subscribe(project => this.activeProject = project)
+    this.projectService.activeProject$.subscribe(project => this.activeProject = project);
   }
 }

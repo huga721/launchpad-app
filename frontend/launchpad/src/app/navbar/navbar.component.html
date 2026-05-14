@@ -24,8 +24,18 @@
   <!-- Bottom light bar with tabs + project name -->
   <div class="navbar-subbar">
     <div class="lp-tabs">
-      <button type="button" class="lp-tab lp-tab-active">Kanban Table</button>
-      <button type="button" class="lp-tab">User Management</button>
+      <button type="button"
+              class="lp-tab"
+              [class.lp-tab-active]="activeTab === 'kanban'"
+              (click)="selectTab('kanban')">
+        Kanban Table
+      </button>
+      <button type="button"
+              class="lp-tab"
+              [class.lp-tab-active]="activeTab === 'management'"
+              (click)="selectTab('management')">
+        User Management
+      </button>
     </div>
 
     <div class="lp-project-name">

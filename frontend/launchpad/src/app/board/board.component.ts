@@ -6,11 +6,12 @@ import { ProjectService } from '../services/project/project.service';
 import { TaskService } from '../services/task/task.service';
 import { TaskCreate, TaskModel, TaskPriority, TaskStatus } from '../model/task-dto';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ManagementComponent } from '../management/management.component';
 
 @Component({
   selector: 'app-board',
   standalone: true,
-  imports: [NavbarComponent, NgIf, NgFor, NgClass, ReactiveFormsModule],
+  imports: [NavbarComponent, NgIf, NgFor, NgClass, ReactiveFormsModule, ManagementComponent],
   templateUrl: './board.component.html',
   styleUrl: './board.component.css'
 })
@@ -21,6 +22,7 @@ export class BoardComponent implements OnInit {
   loading = false;
   showAddTaskModal = false;
   addingToStatus: TaskStatus = 'backlog';
+  activeTab: 'kanban' | 'management' = 'kanban';
 
   addTaskForm = new FormGroup({
     title: new FormControl('', [Validators.required]),
@@ -41,6 +43,10 @@ export class BoardComponent implements OnInit {
       if (project) this.loadTasks(project.id);
       else this.tasks = [];
     });
+  }
+
+  onTabChanged(tab: 'kanban' | 'management'): void {
+    this.activeTab = tab;
   }
 
   loadTasks(projectId: string): void {

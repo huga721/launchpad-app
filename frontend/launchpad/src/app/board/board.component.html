@@ -1,109 +1,111 @@
 <div class="app-wrapper">
-  <app-navbar></app-navbar>
+  <app-navbar (tabChanged)="onTabChanged($event)"></app-navbar>
 
   <div class="board-main">
 
-    <!-- Nie wybrano projektu -->
-    <div class="no-project" *ngIf="activeProject == null">
-      <p>Wybierz projekt z menu po lewej stronie, aby zobaczyć tablicę.</p>
-    </div>
+    <!-- ===== KANBAN ===== -->
+    <ng-container *ngIf="activeTab === 'kanban'">
 
-    <!-- Kanban board -->
-    <div class="board-content" *ngIf="activeProject != null">
-      <div class="board-header">
-        <h3>{{ activeProject.name }}</h3>
+      <div class="no-project" *ngIf="activeProject == null">
+        <p>Wybierz projekt z menu po lewej stronie, aby zobaczyć tablicę.</p>
       </div>
 
-      <div *ngIf="loading" class="loading">Ładowanie tasków...</div>
-
-      <div class="column-container" *ngIf="!loading">
-
-        <!-- BACKLOG -->
-        <div class="task-column">
-          <div class="task-column-header">
-            <h4>Backlog</h4>
-            <span class="task-count">{{ tasksByStatus('backlog').length }}</span>
-          </div>
-          <div class="task-column-body">
-            <div class="task-card" *ngFor="let task of tasksByStatus('backlog')">
-              <div class="task-card-header">
-                <span class="task-title">{{ task.title }}</span>
-                <button class="task-delete-btn" (click)="deleteTask(task, $event)" title="Usuń">×</button>
-              </div>
-              <div class="task-card-meta">
-                <span class="priority-badge" [ngClass]="priorityClass(task.priority)">{{ priorityLabel(task.priority) }}</span>
-              </div>
-              <div class="task-card-desc" *ngIf="task.description">{{ task.description }}</div>
-              <div class="task-card-actions">
-                <button class="move-btn" (click)="moveTask(task, 'in_progress')">→ In Progress</button>
-              </div>
-            </div>
-          </div>
-          <div class="task-column-footer">
-            <button class="add-task-btn" (click)="openAddTask('backlog')">
-              <i class="bi bi-plus-square"></i> Dodaj task
-            </button>
-          </div>
+      <div class="board-content" *ngIf="activeProject != null">
+        <div class="board-header">
+          <h3>{{ activeProject.name }}</h3>
         </div>
 
-        <!-- IN PROGRESS -->
-        <div class="task-column">
-          <div class="task-column-header">
-            <h4>In Progress</h4>
-            <span class="task-count">{{ tasksByStatus('in_progress').length }}</span>
-          </div>
-          <div class="task-column-body">
-            <div class="task-card" *ngFor="let task of tasksByStatus('in_progress')">
-              <div class="task-card-header">
-                <span class="task-title">{{ task.title }}</span>
-                <button class="task-delete-btn" (click)="deleteTask(task, $event)" title="Usuń">×</button>
-              </div>
-              <div class="task-card-meta">
-                <span class="priority-badge" [ngClass]="priorityClass(task.priority)">{{ priorityLabel(task.priority) }}</span>
-              </div>
-              <div class="task-card-desc" *ngIf="task.description">{{ task.description }}</div>
-              <div class="task-card-actions">
-                <button class="move-btn" (click)="moveTask(task, 'backlog')">← Backlog</button>
-                <button class="move-btn" (click)="moveTask(task, 'done')">→ Done</button>
+        <div *ngIf="loading" class="loading">Ładowanie tasków...</div>
+
+        <div class="column-container" *ngIf="!loading">
+
+          <!-- BACKLOG -->
+          <div class="task-column">
+            <div class="task-column-header">
+              <h4>Backlog</h4>
+              <span class="task-count">{{ tasksByStatus('backlog').length }}</span>
+            </div>
+            <div class="task-column-body">
+              <div class="task-card" *ngFor="let task of tasksByStatus('backlog')">
+                <div class="task-card-header">
+                  <span class="task-title">{{ task.title }}</span>
+                  <button class="task-delete-btn" (click)="deleteTask(task, $event)" title="Usuń">×</button>
+                </div>
+                <div class="task-card-meta">
+                  <span class="priority-badge" [ngClass]="priorityClass(task.priority)">{{ priorityLabel(task.priority) }}</span>
+                </div>
+                <div class="task-card-desc" *ngIf="task.description">{{ task.description }}</div>
+                <div class="task-card-actions">
+                  <button class="move-btn" (click)="moveTask(task, 'in_progress')">→ In Progress</button>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="task-column-footer">
-            <button class="add-task-btn" (click)="openAddTask('in_progress')">
-              <i class="bi bi-plus-square"></i> Dodaj task
-            </button>
-          </div>
-        </div>
-
-        <!-- DONE -->
-        <div class="task-column task-column-done">
-          <div class="task-column-header">
-            <h4>Done</h4>
-            <span class="task-count">{{ tasksByStatus('done').length }}</span>
-          </div>
-          <div class="task-column-body">
-            <div class="task-card task-card-done" *ngFor="let task of tasksByStatus('done')">
-              <div class="task-card-header">
-                <span class="task-title">{{ task.title }}</span>
-                <button class="task-delete-btn" (click)="deleteTask(task, $event)" title="Usuń">×</button>
-              </div>
-              <div class="task-card-meta">
-                <span class="priority-badge" [ngClass]="priorityClass(task.priority)">{{ priorityLabel(task.priority) }}</span>
-              </div>
-              <div class="task-card-actions">
-                <button class="move-btn" (click)="moveTask(task, 'in_progress')">← In Progress</button>
-              </div>
+            <div class="task-column-footer">
+              <button class="add-task-btn" (click)="openAddTask('backlog')">+ Dodaj task</button>
             </div>
           </div>
-          <div class="task-column-footer">
-            <button class="add-task-btn" (click)="openAddTask('done')">
-              <i class="bi bi-plus-square"></i> Dodaj task
-            </button>
-          </div>
-        </div>
 
+          <!-- IN PROGRESS -->
+          <div class="task-column">
+            <div class="task-column-header">
+              <h4>In Progress</h4>
+              <span class="task-count">{{ tasksByStatus('in_progress').length }}</span>
+            </div>
+            <div class="task-column-body">
+              <div class="task-card" *ngFor="let task of tasksByStatus('in_progress')">
+                <div class="task-card-header">
+                  <span class="task-title">{{ task.title }}</span>
+                  <button class="task-delete-btn" (click)="deleteTask(task, $event)" title="Usuń">×</button>
+                </div>
+                <div class="task-card-meta">
+                  <span class="priority-badge" [ngClass]="priorityClass(task.priority)">{{ priorityLabel(task.priority) }}</span>
+                </div>
+                <div class="task-card-desc" *ngIf="task.description">{{ task.description }}</div>
+                <div class="task-card-actions">
+                  <button class="move-btn" (click)="moveTask(task, 'backlog')">← Backlog</button>
+                  <button class="move-btn" (click)="moveTask(task, 'done')">→ Done</button>
+                </div>
+              </div>
+            </div>
+            <div class="task-column-footer">
+              <button class="add-task-btn" (click)="openAddTask('in_progress')">+ Dodaj task</button>
+            </div>
+          </div>
+
+          <!-- DONE -->
+          <div class="task-column task-column-done">
+            <div class="task-column-header">
+              <h4>Done</h4>
+              <span class="task-count">{{ tasksByStatus('done').length }}</span>
+            </div>
+            <div class="task-column-body">
+              <div class="task-card task-card-done" *ngFor="let task of tasksByStatus('done')">
+                <div class="task-card-header">
+                  <span class="task-title">{{ task.title }}</span>
+                  <button class="task-delete-btn" (click)="deleteTask(task, $event)" title="Usuń">×</button>
+                </div>
+                <div class="task-card-meta">
+                  <span class="priority-badge" [ngClass]="priorityClass(task.priority)">{{ priorityLabel(task.priority) }}</span>
+                </div>
+                <div class="task-card-actions">
+                  <button class="move-btn" (click)="moveTask(task, 'in_progress')">← In Progress</button>
+                </div>
+              </div>
+            </div>
+            <div class="task-column-footer">
+              <button class="add-task-btn" (click)="openAddTask('done')">+ Dodaj task</button>
+            </div>
+          </div>
+
+        </div>
       </div>
-    </div>
+
+    </ng-container>
+
+    <!-- ===== MANAGEMENT ===== -->
+    <ng-container *ngIf="activeTab === 'management'">
+      <app-management></app-management>
+    </ng-container>
 
   </div>
 </div>
