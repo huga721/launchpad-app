@@ -11,21 +11,26 @@ import {UserResponse} from "../../model/admin-dto";
 export class AuthenticationService {
 
   private apiUrl = environment.apiUrl;
-  private accessToken: string = "";
+  private readonly accessTokenStorageKey = 'launchpad_access_token';
+  private accessToken: string = '';
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {
+    if (typeof window !== 'undefined') {
+      this.accessToken = window.localStorage.getItem(this.accessTokenStorageKey) ?? '';
+    }
+  }
 
   authenticateUser(authRequest: AuthRequest): Observable<AuthResponse> {
     return this.httpClient.post<AuthResponse>(`${this.apiUrl}/auth/login`, authRequest)
       .pipe(
-        tap(response => this.accessToken = response.access_token)
+        tap(response => this.setAccessToken(response.access_token))
       );
   }
 
   registerUser(request: RegisterRequest): Observable<AuthResponse> {
     return this.httpClient.post<AuthResponse>(`${this.apiUrl}/auth/register`, request)
       .pipe(
-        tap(response => this.accessToken = response.access_token)
+        tap(response => this.setAccessToken(response.access_token))
       );
   }
 
@@ -38,6 +43,16 @@ export class AuthenticationService {
   }
 
   logout(): void {
-    this.accessToken = "";
+    this.accessToken = '';
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(this.accessTokenStorageKey);
+    }
+  }
+
+  private setAccessToken(token: string): void {
+    this.accessToken = token;
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(this.accessTokenStorageKey, token);
+    }
   }
 }

@@ -1,9 +1,8 @@
-import {Component, EventEmitter, OnInit, Output, ViewEncapsulation} from '@angular/core';
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgForOf, NgIf} from "@angular/common";
 import {ProjectService} from "../services/project/project.service";
 import {CreateProjectRequest, ProjectModel} from "../model/project-dto";
-import {ProjectMenuComponent} from "../project-menu/project-menu.component";
 
 @Component({
   selector: 'app-project-sidebar',
@@ -23,11 +22,12 @@ export class ProjectSidebarComponent implements OnInit {
   @Output() selectedProject = new EventEmitter<ProjectModel>();
 
   showModal = false;
+  activeProjectId: string | null = null;
 
   projects: ProjectModel[] = []
 
   createProjectForm = new FormGroup({
-    projectName: new FormControl(''),
+    projectName: new FormControl('', [Validators.required]),
     projectDescription: new FormControl('')
   })
 
@@ -36,6 +36,9 @@ export class ProjectSidebarComponent implements OnInit {
   ngOnInit(): void {
     this.projectService.getProjects()
       .subscribe(data => this.projects = data)
+
+    this.projectService.activeProject$
+      .subscribe(project => this.activeProjectId = project?.id ?? null)
   }
 
   closeSidebar(): void {
@@ -44,18 +47,31 @@ export class ProjectSidebarComponent implements OnInit {
 
   selectProject(project: ProjectModel) {
     this.projectService.setActiveProject(project)
+    this.selectedProject.emit(project)
+    this.activeProjectId = project.id
   }
 
   addProject(): void {
+    if (this.createProjectForm.invalid) {
+      return;
+    }
+
     const createProjectRequest: CreateProjectRequest = {
-      name: this.createProjectForm.value.projectName ?? "",
+      name: (this.createProjectForm.value.projectName ?? "").trim(),
       description: this.createProjectForm.value.projectDescription ?? ""
     }
 
+    if (!createProjectRequest.name) {
+      return;
+    }
+
     this.projectService.createProject(createProjectRequest).subscribe({
-      next: (result) => console.log("Project created ", result),
+      next: (result) => {
+        this.projects = [result, ...this.projects]
+        this.createProjectForm.reset({ projectName: '', projectDescription: '' })
+        this.showModal = false;
+      },
       error: (error) => console.error("Error ", error)
     })
-    this.showModal = false;
   }
 }

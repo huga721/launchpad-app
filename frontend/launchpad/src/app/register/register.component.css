@@ -84,6 +84,34 @@
   box-shadow: 0 0 0 2px rgba(62, 207, 142, 0.35);
 }
 
+rwa.lp-input-invalid {
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.28);
+}
+
+.lp-field-error {
+  color: #b42318;
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+.lp-error,
+.lp-success {
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.86rem;
+  margin-bottom: 1rem;
+}
+
+.lp-error {
+  background: rgba(180, 35, 24, 0.12);
+  color: #8f1d14;
+}
+
+.lp-success {
+  background: rgba(62, 207, 142, 0.14);
+  color: #136f48;
+}
+
 .lp-btn {
   display: flex;
   align-items: center;
@@ -101,3 +129,9 @@
 .lp-btn:hover {
   opacity: 0.8;
 }
+
+.lp-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+

@@ -12,10 +12,10 @@
     </div>
 
     <div class="lp-topbar-right">
-      <button type="button" class="btn lp-icon-btn" aria-label="Home">
+      <button type="button" class="btn lp-icon-btn" aria-label="Home" (click)="goHome()">
         <img src="assets/icon/Icon_home.svg" alt="" />
       </button>
-      <button type="button" class="btn lp-icon-btn" aria-label="User">
+      <button type="button" class="btn lp-icon-btn" aria-label="User" (click)="toggleUserPanel()">
         <img src="assets/icon/Icon_user.svg" alt="" />
       </button>
     </div>
@@ -38,11 +38,35 @@
       </button>
     </div>
 
-    <div class="lp-project-name">
-      {{ activeProject?.name }}
+    <div class="lp-project-name-card" [class.lp-project-name-card-empty]="!activeProject">
+      <span class="lp-project-name-label">Aktywny projekt</span>
+      <div class="lp-project-name" [title]="activeProject?.name || 'Brak wybranego projektu'">
+        {{ activeProject?.name || 'Brak wybranego projektu' }}
+      </div>
     </div>
   </div>
 </header>
+
+<div class="lp-user-panel-backdrop" *ngIf="userPanelOpen" (click)="closeUserPanel()"></div>
+
+<aside class="lp-user-panel" *ngIf="userPanelOpen">
+  <div class="lp-user-icon-wrap">
+    <img class="lp-user-panel-icon" src="assets/icon/Icon_user.svg" alt="" />
+  </div>
+
+  <div class="lp-user-loading" *ngIf="userLoading">Ładowanie...</div>
+
+  <div class="lp-user-error" *ngIf="!userLoading && userError">
+    {{ userError }}
+  </div>
+
+  <div class="lp-user-content" *ngIf="!userLoading && !userError && currentUser">
+    <div class="lp-user-full-name">{{ currentUser.full_name }}</div>
+    <div class="lp-user-role">{{ currentUser.role }}</div>
+  </div>
+
+  <button type="button" class="lp-logout-btn" (click)="logout()">Log out</button>
+</aside>
 
 <app-project-sidebar
   *ngIf="sidebarOpen"

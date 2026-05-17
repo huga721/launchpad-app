@@ -1,47 +1,62 @@
 <div class="sidebar-backdrop-custom" (click)="closeSidebar()"></div>
-<div class="sidebar">
 
+<aside class="sidebar">
   <div class="sidebar-header">
     <h4>Projekty</h4>
+    <button type="button" class="icon-btn" aria-label="Zamknij menu projektów" (click)="closeSidebar()">
+      <i class="bi bi-x-lg"></i>
+    </button>
   </div>
 
   <div class="sidebar-body">
-    <ul class="project-list">
-      <li *ngFor="let project of projects" (click)="selectProject(project)">
-        {{ project.name }}
+    <p class="sidebar-subtitle">Wybierz aktywny projekt</p>
+
+    <ul class="project-list" *ngIf="projects.length > 0; else emptyProjects">
+      <li
+        *ngFor="let project of projects"
+        class="project-item"
+        [class.project-item-active]="project.id === activeProjectId"
+        (click)="selectProject(project)">
+        <div class="project-name">{{ project.name }}</div>
+        <div class="project-description">{{ project.description || 'Brak opisu projektu' }}</div>
       </li>
     </ul>
+
+    <ng-template #emptyProjects>
+      <div class="empty-state">Brak projektów. Dodaj pierwszy projekt poniżej.</div>
+    </ng-template>
   </div>
 
   <div class="sidebar-footer">
-    <a href="#" class="add-project-button" (click)="$event.preventDefault(); showModal = true">
+    <button type="button" class="add-project-button" (click)="showModal = true">
       <i class="bi bi-plus-square"></i>
-    </a>
+      <span>Nowy projekt</span>
+    </button>
   </div>
-</div>
+</aside>
 
 <div class="modal-overlay" *ngIf="showModal" (click)="showModal = false">
-
   <div class="modal-box" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h5>Nowy Projekt</h5>
+      <h5>Nowy projekt</h5>
     </div>
 
     <form [formGroup]="createProjectForm" (ngSubmit)="addProject()">
       <div class="modal-body">
+        <div class="form-row">
+          <label class="form-label">Nazwa projektu</label>
+          <input class="form-input" type="text" formControlName="projectName" placeholder="Np. Launchpad Mobile" />
+        </div>
 
         <div class="form-row">
-          <label class="form-label">Nazwa Projektu</label>
-          <input class="form-input" type="text" formControlName="projectName">
-        </div>
-        <div class="form-row">
-          <label class="form-label">Opis Projektu</label>
-          <input class="form-input" type="text" formControlName="projectDescription">
+          <label class="form-label">Opis projektu</label>
+          <input class="form-input" type="text" formControlName="projectDescription" placeholder="Krótki opis" />
         </div>
       </div>
 
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" (click)="addProject()">Dodaj Projekt</button>
+        <button type="button" class="btn btn-secondary" (click)="showModal = false">Anuluj</button>
+        <button type="submit" class="btn btn-primary" [disabled]="createProjectForm.invalid">Dodaj projekt</button>
       </div>
 
     </form>

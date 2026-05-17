@@ -16,25 +16,37 @@
         <!-- Full name -->
         <div class="lp-field">
           <label class="lp-label" for="full-name">Imię i nazwisko</label>
-          <input id="full-name" class="lp-input" type="text" formControlName="fullName" placeholder="Jan Kowalski">
+          <input id="full-name" class="lp-input" [class.lp-input-invalid]="hasControlError('fullName')" type="text" formControlName="fullName" placeholder="Jan Kowalski">
+          <div class="lp-field-error" *ngIf="hasControlError('fullName')">{{ getControlError('fullName') }}</div>
         </div>
 
         <!-- Email -->
         <div class="lp-field">
           <label for="username" class="lp-label">E-mail</label>
           <input id="username" formControlName="username" type="email"
-                 class="lp-input" placeholder="jan@example.com">
+                 class="lp-input" [class.lp-input-invalid]="hasControlError('username')" placeholder="jan@example.com">
+          <div class="lp-field-error" *ngIf="hasControlError('username')">{{ getControlError('username') }}</div>
         </div>
 
         <!-- Password -->
         <div class="lp-field">
           <label for="password" class="lp-label">Hasło</label>
           <input id="password" formControlName="password" type="password"
-                 class="lp-input" placeholder="••••••••••••">
+                 class="lp-input" [class.lp-input-invalid]="hasControlError('password')" placeholder="Minimum 8 znaków">
+          <div class="lp-field-error" *ngIf="hasControlError('password')">{{ getControlError('password') }}</div>
+        </div>
+
+        <div class="lp-field">
+          <label for="confirm-password" class="lp-label">Powtórz hasło</label>
+          <input id="confirm-password" formControlName="confirmPassword" type="password"
+                 class="lp-input" [class.lp-input-invalid]="hasControlError('confirmPassword') || passwordMismatch" placeholder="Powtórz hasło">
+          <div class="lp-field-error" *ngIf="hasControlError('confirmPassword')">{{ getControlError('confirmPassword') }}</div>
+          <div class="lp-field-error" *ngIf="!hasControlError('confirmPassword') && passwordMismatch">Hasła muszą być identyczne.</div>
         </div>
 
         <!-- Error -->
         <div class="lp-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+        <div class="lp-success" *ngIf="successMessage">{{ successMessage }}</div>
 
         <div class="lp-card-footer">
           <div>
