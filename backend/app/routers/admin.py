@@ -48,7 +48,9 @@ def update_user(user_id: str, body: AdminUpdateUserRequest, db: DB, _: AdminUser
 
 
 @router.delete("/users/{user_id}", status_code=204)
-def delete_user(user_id: str, db: DB, _: AdminUser):
+def delete_user(user_id: str, db: DB, current_user: AdminUser):
+    if user_id == current_user.id:
+        raise HTTPException(400, "Cannot delete your own account")
     result = db.execute(delete(User).where(User.id == user_id))
     if result.rowcount == 0:
         raise HTTPException(404, "User not found")
