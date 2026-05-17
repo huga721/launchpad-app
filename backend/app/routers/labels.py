@@ -28,17 +28,19 @@ def _get_membership(db: DB, project_id: str, user_id: str) -> ProjectMember | No
     )
 
 
-def _require_membership(db: DB, project_id: str, user_id: str) -> ProjectMember:
-    membership = _get_membership(db, project_id, user_id)
+def _require_membership(db: DB, project_id: str, current_user: User) -> ProjectMember | None:
+    if current_user.role == "admin":
+        return _get_membership(db, project_id, current_user.id)
+    membership = _get_membership(db, project_id, current_user.id)
     if not membership:
         raise HTTPException(status_code=403, detail="Not a project member")
     return membership
 
 
-def _require_can_edit(membership: ProjectMember, current_user: User) -> None:
+def _require_can_edit(membership: ProjectMember | None, current_user: User) -> None:
     if current_user.role == "admin":
         return
-    if membership.role not in ["owner", "editor"]:
+    if not membership or membership.role not in ["owner", "editor"]:
         raise HTTPException(status_code=403, detail="Only owner or editor can perform this action")
 
 
@@ -57,7 +59,7 @@ def _require_label(db: DB, project_id: str, label_id: str) -> Label:
 @router.get("", response_model=list[LabelResponse])
 def list_labels(project_id: str, db: DB, current_user: CurrentUser):
     _require_project(db, project_id)
-    _require_membership(db, project_id, current_user.id)
+    _require_membership(db, project_id, current_user)
 
     return db.scalars(
         select(Label)
@@ -74,7 +76,7 @@ def create_label(
     current_user: CurrentUser,
 ):
     _require_project(db, project_id)
-    membership = _require_membership(db, project_id, current_user.id)
+    membership = _require_membership(db, project_id, current_user)
     _require_can_edit(membership, current_user)
 
     label = Label(
@@ -103,7 +105,7 @@ def get_label(
     current_user: CurrentUser,
 ):
     _require_project(db, project_id)
-    _require_membership(db, project_id, current_user.id)
+    _require_membership(db, project_id, current_user)
 
     return _require_label(db, project_id, label_id)
 
@@ -117,7 +119,7 @@ def update_label(
     current_user: CurrentUser,
 ):
     _require_project(db, project_id)
-    membership = _require_membership(db, project_id, current_user.id)
+    membership = _require_membership(db, project_id, current_user)
     _require_can_edit(membership, current_user)
 
     label = _require_label(db, project_id, label_id)
@@ -145,7 +147,7 @@ def delete_label(
     current_user: CurrentUser,
 ):
     _require_project(db, project_id)
-    membership = _require_membership(db, project_id, current_user.id)
+    membership = _require_membership(db, project_id, current_user)
     _require_can_edit(membership, current_user)
 
     label = _require_label(db, project_id, label_id)

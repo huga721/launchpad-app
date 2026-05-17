@@ -34,20 +34,24 @@ def _require_project(db: DB, project_id: str) -> Project:
     return project
 
 
-def _require_membership(db: DB, project_id: str, user_id: str) -> ProjectMember:
-    membership = _get_membership(db, project_id, user_id)
+def _require_membership(db: DB, project_id: str, current_user: User) -> ProjectMember | None:
+    if current_user.role == "admin":
+        return _get_membership(db, project_id, current_user.id)
+    membership = _get_membership(db, project_id, current_user.id)
     if not membership:
         raise HTTPException(status_code=403, detail="Not a project member")
     return membership
 
 
-def _require_owner(membership: ProjectMember, current_user: User) -> None:
-    if current_user.role != "admin" and membership.role != "owner":
+def _require_owner(membership: ProjectMember | None, current_user: User) -> None:
+    if current_user.role != "admin" and (not membership or membership.role != "owner"):
         raise HTTPException(status_code=403, detail="Only owner or admin can perform this action")
 
 
 @router.get("", response_model=list[ProjectResponse])
 def list_projects(db: DB, current_user: CurrentUser):
+    if current_user.role == "admin":
+        return db.scalars(select(Project)).all()
     memberships = db.scalars(
         select(ProjectMember).where(ProjectMember.user_id == current_user.id)
     ).all()
@@ -79,14 +83,14 @@ def create_project(body: ProjectCreate, db: DB, current_user: CurrentUser):
 @router.get("/{project_id}", response_model=ProjectResponse)
 def get_project(project_id: str, db: DB, current_user: CurrentUser):
     project = _require_project(db, project_id)
-    _require_membership(db, project_id, current_user.id)
+    _require_membership(db, project_id, current_user)
     return project
 
 
 @router.patch("/{project_id}", response_model=ProjectResponse)
 def update_project(project_id: str, body: ProjectUpdate, db: DB, current_user: CurrentUser):
     project = _require_project(db, project_id)
-    membership = _require_membership(db, project_id, current_user.id)
+    membership = _require_membership(db, project_id, current_user)
     _require_owner(membership, current_user)
     if body.name is not None:
         project.name = body.name
@@ -99,7 +103,7 @@ def update_project(project_id: str, body: ProjectUpdate, db: DB, current_user: C
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_project(project_id: str, db: DB, current_user: CurrentUser):
     project = _require_project(db, project_id)
-    membership = _require_membership(db, project_id, current_user.id)
+    membership = _require_membership(db, project_id, current_user)
     _require_owner(membership, current_user)
     db.delete(project)
     db.commit()
@@ -107,7 +111,8 @@ def delete_project(project_id: str, db: DB, current_user: CurrentUser):
 
 @router.get("/{project_id}/members", response_model=list[MemberResponse])
 def list_members(project_id: str, db: DB, current_user: CurrentUser):
-    _require_membership(db, project_id, current_user.id)
+    _require_project(db, project_id)
+    _require_membership(db, project_id, current_user)
     memberships = db.scalars(
         select(ProjectMember)
         .where(ProjectMember.project_id == project_id)
@@ -128,7 +133,7 @@ def list_members(project_id: str, db: DB, current_user: CurrentUser):
 @router.post("/{project_id}/members", response_model=MemberResponse, status_code=status.HTTP_201_CREATED)
 def add_member(project_id: str, body: AddMemberRequest, db: DB, current_user: CurrentUser):
     _require_project(db, project_id)
-    membership = _require_membership(db, project_id, current_user.id)
+    membership = _require_membership(db, project_id, current_user)
     _require_owner(membership, current_user)
     target_user = db.get(User, body.user_id)
     if not target_user:
@@ -155,7 +160,7 @@ def add_member(project_id: str, body: AddMemberRequest, db: DB, current_user: Cu
 @router.patch("/{project_id}/members/{user_id}", response_model=MemberResponse)
 def update_member_role(project_id: str, user_id: str, body: UpdateMemberRequest, db: DB, current_user: CurrentUser):
     _require_project(db, project_id)
-    membership = _require_membership(db, project_id, current_user.id)
+    membership = _require_membership(db, project_id, current_user)
     _require_owner(membership, current_user)
     target = _get_membership(db, project_id, user_id)
     if not target:
@@ -183,7 +188,8 @@ def update_member_role(project_id: str, user_id: str, body: UpdateMemberRequest,
 
 @router.delete("/{project_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_member(project_id: str, user_id: str, db: DB, current_user: CurrentUser):
-    membership = _require_membership(db, project_id, current_user.id)
+    _require_project(db, project_id)
+    membership = _require_membership(db, project_id, current_user)
     _require_owner(membership, current_user)
     target = _get_membership(db, project_id, user_id)
     if not target:

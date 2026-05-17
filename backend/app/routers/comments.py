@@ -32,17 +32,19 @@ def _get_membership(db: DB, project_id: str, user_id: str) -> ProjectMember | No
     )
 
 
-def _require_membership(db: DB, project_id: str, user_id: str) -> ProjectMember:
-    membership = _get_membership(db, project_id, user_id)
+def _require_membership(db: DB, project_id: str, current_user: User) -> ProjectMember | None:
+    if current_user.role == "admin":
+        return _get_membership(db, project_id, current_user.id)
+    membership = _get_membership(db, project_id, current_user.id)
     if not membership:
         raise HTTPException(status_code=403, detail="Not a project member")
     return membership
 
 
-def _require_can_edit(membership: ProjectMember, current_user: User) -> None:
+def _require_can_edit(membership: ProjectMember | None, current_user: User) -> None:
     if current_user.role == "admin":
         return
-    if membership.role not in ["owner", "editor"]:
+    if not membership or membership.role not in ["owner", "editor"]:
         raise HTTPException(
             status_code=403,
             detail="Only owner or editor can perform this action",
@@ -83,7 +85,7 @@ def list_comments(
     current_user: CurrentUser,
 ):
     _require_project(db, project_id)
-    _require_membership(db, project_id, current_user.id)
+    _require_membership(db, project_id, current_user)
     _require_task(db, project_id, task_id)
 
     return db.scalars(
@@ -103,7 +105,7 @@ def create_comment(
     current_user: CurrentUser,
 ):
     _require_project(db, project_id)
-    membership = _require_membership(db, project_id, current_user.id)
+    membership = _require_membership(db, project_id, current_user)
     _require_can_edit(membership, current_user)
     _require_task(db, project_id, task_id)
 
@@ -130,7 +132,7 @@ def update_comment(
     current_user: CurrentUser,
 ):
     _require_project(db, project_id)
-    _require_membership(db, project_id, current_user.id)
+    _require_membership(db, project_id, current_user)
     _require_task(db, project_id, task_id)
 
     comment = _require_comment(db, task_id, comment_id)
@@ -156,7 +158,7 @@ def delete_comment(
     current_user: CurrentUser,
 ):
     _require_project(db, project_id)
-    _require_membership(db, project_id, current_user.id)
+    _require_membership(db, project_id, current_user)
     _require_task(db, project_id, task_id)
 
     comment = _require_comment(db, task_id, comment_id)
