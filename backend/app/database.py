@@ -1,4 +1,3 @@
-import hashlib
 import os
 
 from sqlalchemy import create_engine, event, select
@@ -21,35 +20,31 @@ def init_db(url: str = "sqlite:///launchpad.db") -> sessionmaker:
 
 
 def seed(session):
-
-    def fake_hash(p):
-        return "pbkdf2:" + hashlib.sha256(p.encode()).hexdigest()
-
     # Users
     admin = User(
         email="john@example.com",
-        password_hash=fake_hash("admin123"),
+        password_hash=hash_password("admin123"),
         full_name="John Smith",
         role="admin",
     )
     u1 = User(
         email="lisa@example.com",
-        password_hash=fake_hash("pass123"),
+        password_hash=hash_password("pass123"),
         full_name="Lisa Brown",
     )
     u2 = User(
         email="chris@example.com",
-        password_hash=fake_hash("pass123"),
+        password_hash=hash_password("pass123"),
         full_name="Chris Evans",
     )
     u3 = User(
         email="sara@example.com",
-        password_hash=fake_hash("pass123"),
+        password_hash=hash_password("pass123"),
         full_name="Sara Wilson",
     )
     u4 = User(
         email="mike@example.com",
-        password_hash=fake_hash("pass123"),
+        password_hash=hash_password("pass123"),
         full_name="Mike Taylor",
     )
     session.add_all([admin, u1, u2, u3, u4])
