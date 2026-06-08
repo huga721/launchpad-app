@@ -46,17 +46,25 @@ export class ManagementComponent implements OnInit {
     });
   }
 
-  // ── Add ────────────────────────────────────────────────────
   openAddModal(): void {
-    this.addUserForm.reset({ role: 'user' });
+    this.addUserForm.reset({
+      full_name: '',
+      email:     '',
+      password:  '',
+      role:      'user',
+    });
     this.errorMsg = '';
     this.showAddModal = true;
   }
 
-  closeAddModal(): void { this.showAddModal = false; }
+  closeAddModal(): void {
+    this.showAddModal = false;
+    this.errorMsg = '';
+  }
 
   submitAddUser(): void {
     if (this.addUserForm.invalid) return;
+    this.errorMsg = '';
     this.adminService.createUser({
       full_name: this.addUserForm.value.full_name ?? '',
       email:     this.addUserForm.value.email     ?? '',
@@ -68,18 +76,26 @@ export class ManagementComponent implements OnInit {
     });
   }
 
-  // ── Edit ───────────────────────────────────────────────────
   openEditModal(user: UserResponse): void {
     this.selectedUser = user;
-    this.editUserForm.reset({ full_name: user.full_name, role: user.role, password: '' });
+    this.editUserForm.reset({
+      full_name: user.full_name,
+      role:      user.role,
+      password:  '',
+    });
     this.errorMsg = '';
     this.showEditModal = true;
   }
 
-  closeEditModal(): void { this.showEditModal = false; this.selectedUser = null; }
+  closeEditModal(): void {
+    this.showEditModal = false;
+    this.selectedUser = null;
+    this.errorMsg = '';
+  }
 
   submitEditUser(): void {
     if (!this.selectedUser || this.editUserForm.invalid) return;
+    this.errorMsg = '';
     const body: any = {
       full_name: this.editUserForm.value.full_name ?? undefined,
       role:      this.editUserForm.value.role      ?? undefined,
@@ -95,7 +111,6 @@ export class ManagementComponent implements OnInit {
     });
   }
 
-  // ── Delete ─────────────────────────────────────────────────
   deleteUser(user: UserResponse): void {
     if (!confirm(`Usunąć użytkownika ${user.full_name}?`)) return;
     this.adminService.deleteUser(user.id).subscribe({

@@ -1,19 +1,25 @@
-import { HttpInterceptorFn } from '@angular/common/http';
-import {inject} from "@angular/core";
-import {AuthenticationService} from "../../services/authentication/authentication.service";
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
+import { AuthenticationService } from '../../services/authentication/authentication.service';
 
 export const headersInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthenticationService)
-  const token = authService.getAccessToken()
+  const authService = inject(AuthenticationService);
+  const router = inject(Router);
+  const token = authService.getAccessToken();
 
-  if (token) {
-    console.log(`Trying to authorize request ${req} with ${token}`)
-    const clonedRequest = req.clone({
-      headers: req.headers.set('Authorization', `Bearer ${token}`)
+  const clonedRequest = token
+    ? req.clone({ headers: req.headers.set('Authorization', `Bearer ${token}`) })
+    : req;
+
+  return next(clonedRequest).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401 && !req.url.includes('/auth/')) {
+        authService.logout();
+        router.navigate(['/login']);
+      }
+      return throwError(() => error);
     })
-    return next(clonedRequest)
-  }
-
-  console.warn("Token DNE")
-  return next(req);
+  );
 };
