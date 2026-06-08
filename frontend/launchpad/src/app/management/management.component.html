@@ -1,39 +1,44 @@
 <div class="mgmt-wrapper">
 
-  <div *ngIf="loading" class="mgmt-loading">Ładowanie użytkowników...</div>
+  <div class="mgmt-header">
+    <h2>User Management</h2>
+    <button class="btn-add" (click)="openAddModal()">+ Dodaj użytkownika</button>
+  </div>
+
+  <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+  <div class="loading-msg" *ngIf="loading">Ładowanie użytkowników...</div>
 
   <div class="mgmt-table-wrapper" *ngIf="!loading">
     <table class="mgmt-table">
       <thead>
       <tr>
-        <th>Display name</th>
+        <th>Imię i nazwisko</th>
         <th>E-mail</th>
-        <th>Role</th>
-        <th>Password</th>
-        <th></th>
+        <th>Rola</th>
+        <th>Data rejestracji</th>
+        <th>Akcje</th>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let user of users">
         <td>{{ user.full_name }}</td>
         <td>{{ user.email }}</td>
-        <td>{{ user.role === 'admin' ? 'Administrator' : 'User' }}</td>
         <td>
-          <button class="reset-btn" (click)="openResetModal(user)">Reset password</button>
+            <span class="role-badge" [ngClass]="user.role === 'admin' ? 'role-admin' : 'role-user'">
+              {{ user.role === 'admin' ? 'Administrator' : 'User' }}
+            </span>
         </td>
-        <td>
-          <button class="delete-btn" (click)="deleteUser(user)" title="Usuń">✕</button>
+        <td>{{ formatDate(user.created_at) }}</td>
+        <td class="actions-cell">
+          <button class="btn-edit" (click)="openEditModal(user)">Edytuj</button>
+          <button class="btn-del"  (click)="deleteUser(user)">Usuń</button>
         </td>
+      </tr>
+      <tr *ngIf="users.length === 0">
+        <td colspan="5" class="empty-msg">Brak użytkowników.</td>
       </tr>
       </tbody>
     </table>
-
-    <!-- Dodaj usera -->
-    <div class="mgmt-add-row">
-      <button class="add-btn" (click)="openAddModal()">
-        <span class="add-btn-icon">＋</span>
-      </button>
-    </div>
   </div>
 
 </div>
@@ -43,6 +48,7 @@
   <div class="modal-box" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h5>Nowy użytkownik</h5>
+      <button class="modal-close" (click)="closeAddModal()">✕</button>
     </div>
     <form [formGroup]="addUserForm" (ngSubmit)="submitAddUser()">
       <div class="modal-body">
@@ -55,7 +61,7 @@
           <input class="form-input" type="email" formControlName="email" placeholder="jan@example.com">
         </div>
         <div class="form-row">
-          <label class="form-label">Hasło *</label>
+          <label class="form-label">Hasło * (min. 6 znaków)</label>
           <input class="form-input" type="password" formControlName="password" placeholder="••••••••">
         </div>
         <div class="form-row">
@@ -65,31 +71,45 @@
             <option value="admin">Administrator</option>
           </select>
         </div>
+        <div class="error-msg" *ngIf="errorMsg" style="margin-top:4px">{{ errorMsg }}</div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeAddModal()">Anuluj</button>
-        <button type="submit" class="btn btn-primary" [disabled]="addUserForm.invalid">Dodaj</button>
+        <button type="submit"  class="btn btn-primary"  [disabled]="addUserForm.invalid">Dodaj</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Modal: Reset hasła -->
-<div class="modal-overlay" *ngIf="showResetModal" (click)="closeResetModal()">
+<!-- Modal: Edytuj użytkownika -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
   <div class="modal-box" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h5>Reset hasła — {{ selectedUser?.full_name }}</h5>
+      <h5>Edytuj: {{ selectedUser?.email }}</h5>
+      <button class="modal-close" (click)="closeEditModal()">✕</button>
     </div>
-    <form [formGroup]="resetPasswordForm" (ngSubmit)="submitResetPassword()">
+    <form [formGroup]="editUserForm" (ngSubmit)="submitEditUser()">
       <div class="modal-body">
         <div class="form-row">
-          <label class="form-label">Nowe hasło *</label>
+          <label class="form-label">Imię i nazwisko *</label>
+          <input class="form-input" type="text" formControlName="full_name">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Rola</label>
+          <select class="form-input" formControlName="role">
+            <option value="user">User</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Nowe hasło (zostaw puste, aby nie zmieniać)</label>
           <input class="form-input" type="password" formControlName="password" placeholder="••••••••">
         </div>
+        <div class="error-msg" *ngIf="errorMsg" style="margin-top:4px">{{ errorMsg }}</div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeResetModal()">Anuluj</button>
-        <button type="submit" class="btn btn-primary" [disabled]="resetPasswordForm.invalid">Zapisz</button>
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Anuluj</button>
+        <button type="submit"  class="btn btn-primary"  [disabled]="editUserForm.invalid">Zapisz</button>
       </div>
     </form>
   </div>

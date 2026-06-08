@@ -39,6 +39,25 @@ export interface TaskCreate {
   label_ids: string[];
 }
 
+export interface TaskUpdate {
+  title?: string;
+  description?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  start_date?: string | null;
+  end_date?: string | null;
+  assignee_ids?: string[];
+  label_ids?: string[];
+}
+
 export interface TaskStatusUpdate {
   status: TaskStatus;
+}
+
+export interface TaskFilters {
+  status_filter?: TaskStatus;
+  priority?: TaskPriority;
+  assignee_id?: string;
+  label_id?: string;
+  only_my?: boolean;
 }

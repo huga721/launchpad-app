@@ -6,97 +6,132 @@
     <!-- ===== KANBAN ===== -->
     <ng-container *ngIf="activeTab === 'kanban'">
 
-      <div class="no-project" *ngIf="activeProject == null">
-        <p>Wybierz projekt z menu po lewej stronie, aby zobaczyć tablicę.</p>
+      <!-- No project selected -->
+      <div class="no-project" *ngIf="!activeProject">
+        <div class="no-project-inner">
+          <div class="no-project-icon">📋</div>
+          <h3>Wybierz projekt</h3>
+          <p>Kliknij ikonę menu w górnym pasku, aby wybrać lub utworzyć projekt.</p>
+        </div>
       </div>
 
-      <div class="board-content" *ngIf="activeProject != null">
+      <div class="board-content" *ngIf="activeProject">
 
-        <div *ngIf="loading" class="loading">Ładowanie tasków...</div>
+        <!-- Filter bar -->
+        <div class="filter-bar">
+          <span class="filter-label">Filtry:</span>
 
+          <select class="filter-select" [(ngModel)]="filterPriority">
+            <option value="">Priorytet: Wszystkie</option>
+            <option value="low">🟢 Low</option>
+            <option value="medium">🔵 Medium</option>
+            <option value="high">🟠 High</option>
+            <option value="critical">🔴 Critical</option>
+          </select>
+
+          <select class="filter-select" [(ngModel)]="filterAssignee">
+            <option value="">Osoba: Wszystkie</option>
+            <option *ngFor="let m of members" [value]="m.user_id">{{ m.full_name }}</option>
+          </select>
+
+          <select class="filter-select" [(ngModel)]="filterLabel">
+            <option value="">Etykieta: Wszystkie</option>
+            <option *ngFor="let l of labels" [value]="l.id">{{ l.name }}</option>
+          </select>
+
+          <label class="filter-check">
+            <input type="checkbox" [(ngModel)]="filterOnlyMy"> Tylko moje
+          </label>
+
+          <button class="btn-filter-apply" (click)="applyFilters()">Filtruj</button>
+          <button class="btn-filter-reset" (click)="resetFilters()">Resetuj</button>
+
+          <div class="filter-bar-right">
+            <button class="btn-labels" (click)="openLabelModal()">🏷 Etykiety</button>
+          </div>
+        </div>
+
+        <div class="loading-msg" *ngIf="loading">Ładowanie tasków...</div>
+
+        <!-- Kanban columns -->
         <div class="column-container" *ngIf="!loading">
 
           <!-- BACKLOG -->
-          <div class="task-column">
-            <div class="task-column-header">
+          <div class="task-column"
+               (dragover)="onDragOver($event)"
+               (dragleave)="onDragLeave($event)"
+               (drop)="onDrop('backlog', $event)">
+            <div class="col-header col-backlog">
+              <span class="col-dot"></span>
               <h4>Backlog</h4>
-              <span class="task-count">{{ tasksByStatus('backlog').length }}</span>
+              <span class="col-count">{{ tasksByStatus('backlog').length }}</span>
             </div>
-            <div class="task-column-body">
-              <div class="task-card" *ngFor="let task of tasksByStatus('backlog')">
-                <div class="task-card-header">
-                  <span class="task-title">{{ task.title }}</span>
-                  <button class="task-delete-btn" (click)="deleteTask(task, $event)" title="Usuń">×</button>
-                </div>
-                <div class="task-card-meta">
-                  <span class="priority-badge" [ngClass]="priorityClass(task.priority)">{{ priorityLabel(task.priority) }}</span>
-                </div>
-                <div class="task-card-desc" *ngIf="task.description">{{ task.description }}</div>
-                <div class="task-card-actions">
-                  <button class="move-btn" (click)="moveTask(task, 'in_progress')">→ In Progress</button>
-                </div>
+            <div class="col-body">
+              <div class="task-card"
+                   *ngFor="let task of tasksByStatus('backlog')"
+                   [class.overdue]="isOverdue(task)"
+                   draggable="true"
+                   (dragstart)="onDragStart(task, $event)"
+                   (dragend)="onDragEnd()">
+                <ng-container *ngTemplateOutlet="taskCardTpl; context: { task: task, showMove: ['in_progress'] }"></ng-container>
               </div>
             </div>
-            <div class="task-column-footer">
+            <div class="col-footer">
               <button class="add-task-btn" (click)="openAddTask('backlog')">+ Dodaj task</button>
             </div>
           </div>
 
           <!-- IN PROGRESS -->
-          <div class="task-column">
-            <div class="task-column-header">
+          <div class="task-column"
+               (dragover)="onDragOver($event)"
+               (dragleave)="onDragLeave($event)"
+               (drop)="onDrop('in_progress', $event)">
+            <div class="col-header col-inprogress">
+              <span class="col-dot"></span>
               <h4>In Progress</h4>
-              <span class="task-count">{{ tasksByStatus('in_progress').length }}</span>
+              <span class="col-count">{{ tasksByStatus('in_progress').length }}</span>
             </div>
-            <div class="task-column-body">
-              <div class="task-card" *ngFor="let task of tasksByStatus('in_progress')">
-                <div class="task-card-header">
-                  <span class="task-title">{{ task.title }}</span>
-                  <button class="task-delete-btn" (click)="deleteTask(task, $event)" title="Usuń">×</button>
-                </div>
-                <div class="task-card-meta">
-                  <span class="priority-badge" [ngClass]="priorityClass(task.priority)">{{ priorityLabel(task.priority) }}</span>
-                </div>
-                <div class="task-card-desc" *ngIf="task.description">{{ task.description }}</div>
-                <div class="task-card-actions">
-                  <button class="move-btn" (click)="moveTask(task, 'backlog')">← Backlog</button>
-                  <button class="move-btn" (click)="moveTask(task, 'done')">→ Done</button>
-                </div>
+            <div class="col-body">
+              <div class="task-card"
+                   *ngFor="let task of tasksByStatus('in_progress')"
+                   [class.overdue]="isOverdue(task)"
+                   draggable="true"
+                   (dragstart)="onDragStart(task, $event)"
+                   (dragend)="onDragEnd()">
+                <ng-container *ngTemplateOutlet="taskCardTpl; context: { task: task, showMove: ['backlog', 'done'] }"></ng-container>
               </div>
             </div>
-            <div class="task-column-footer">
+            <div class="col-footer">
               <button class="add-task-btn" (click)="openAddTask('in_progress')">+ Dodaj task</button>
             </div>
           </div>
 
           <!-- DONE -->
-          <div class="task-column task-column-done">
-            <div class="task-column-header">
-              <h4>Done</h4>
-              <span class="task-count">{{ tasksByStatus('done').length }}</span>
+          <div class="task-column task-column-done"
+               (dragover)="onDragOver($event)"
+               (dragleave)="onDragLeave($event)"
+               (drop)="onDrop('done', $event)">
+            <div class="col-header col-done">
+              <span class="col-dot"></span>
+              <h4>Done ✓</h4>
+              <span class="col-count">{{ tasksByStatus('done').length }}</span>
             </div>
-            <div class="task-column-body">
-              <div class="task-card task-card-done" *ngFor="let task of tasksByStatus('done')">
-                <div class="task-card-header">
-                  <span class="task-title">{{ task.title }}</span>
-                  <button class="task-delete-btn" (click)="deleteTask(task, $event)" title="Usuń">×</button>
-                </div>
-                <div class="task-card-meta">
-                  <span class="priority-badge" [ngClass]="priorityClass(task.priority)">{{ priorityLabel(task.priority) }}</span>
-                </div>
-                <div class="task-card-actions">
-                  <button class="move-btn" (click)="moveTask(task, 'in_progress')">← In Progress</button>
-                </div>
+            <div class="col-body">
+              <div class="task-card task-card-done"
+                   *ngFor="let task of tasksByStatus('done')"
+                   draggable="true"
+                   (dragstart)="onDragStart(task, $event)"
+                   (dragend)="onDragEnd()">
+                <ng-container *ngTemplateOutlet="taskCardTpl; context: { task: task, showMove: ['in_progress'] }"></ng-container>
               </div>
             </div>
-            <div class="task-column-footer">
+            <div class="col-footer">
               <button class="add-task-btn" (click)="openAddTask('done')">+ Dodaj task</button>
             </div>
           </div>
 
         </div>
       </div>
-
     </ng-container>
 
     <!-- ===== MANAGEMENT ===== -->
@@ -107,46 +142,175 @@
   </div>
 </div>
 
-<!-- Modal: Nowy task -->
-<div class="modal-overlay" *ngIf="showAddTaskModal" (click)="closeModal()">
-  <div class="modal-box" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h5>Nowy task — {{ addingToStatus }}</h5>
+<!-- ── Task card template ───────────────────────────────────── -->
+<ng-template #taskCardTpl let-task="task" let-showMove="showMove">
+  <div class="card-top">
+    <span class="card-title" [class.done-title]="task.status === 'done'">{{ task.title }}</span>
+    <div class="card-actions">
+      <button class="card-btn-edit" (click)="openEditTask(task, $event)" title="Edytuj">✏️</button>
+      <button class="card-btn-del"  (click)="deleteTask(task, $event)"   title="Usuń">✕</button>
     </div>
-    <form [formGroup]="addTaskForm" (ngSubmit)="submitAddTask()">
-      <div class="modal-body">
-        <div class="form-row">
-          <label class="form-label">Tytuł *</label>
-          <input class="form-input" type="text" formControlName="title" placeholder="Nazwa taska">
-        </div>
-        <div class="form-row">
-          <label class="form-label">Opis</label>
-          <textarea class="form-input" formControlName="description" placeholder="Opis (opcjonalnie)" rows="3"></textarea>
-        </div>
-        <div class="form-row">
-          <label class="form-label">Priorytet</label>
-          <select class="form-input" formControlName="priority">
-            <option value="low">Niski</option>
-            <option value="medium">Średni</option>
-            <option value="high">Wysoki</option>
-            <option value="critical">Krytyczny</option>
-          </select>
-        </div>
-        <div class="form-row form-row-dates">
-          <div>
-            <label class="form-label">Data startu</label>
-            <input class="form-input" type="date" formControlName="start_date">
+  </div>
+
+  <div class="card-desc" *ngIf="task.description">{{ task.description }}</div>
+
+  <div class="card-labels" *ngIf="task.labels.length">
+    <span class="label-chip"
+          *ngFor="let l of task.labels"
+          [style.background]="l.color + '22'"
+          [style.color]="l.color"
+          [style.border-color]="l.color + '66'">{{ l.name }}</span>
+  </div>
+
+  <div class="card-meta">
+    <span class="pr-badge" [ngClass]="priorityClass(task.priority)">{{ priorityLabel(task.priority) }}</span>
+    <span class="card-date overdue-txt" *ngIf="isOverdue(task)">⚠ {{ task.end_date | date:'dd.MM.yy' }}</span>
+    <span class="card-date" *ngIf="task.end_date && !isOverdue(task)">📅 {{ task.end_date | date:'dd.MM.yy' }}</span>
+    <span class="card-date" *ngIf="task.start_date && !task.end_date">🗓 {{ task.start_date | date:'dd.MM.yy' }}</span>
+  </div>
+
+  <div class="card-assignees" *ngIf="task.assignees.length">
+    <span class="assignee-avatar" *ngFor="let a of task.assignees" [title]="a.full_name">
+      {{ a.full_name[0].toUpperCase() }}
+    </span>
+  </div>
+
+  <div class="card-footer-actions">
+    <ng-container *ngFor="let s of showMove">
+      <button class="move-btn" (click)="moveTask(task, s === 'backlog' ? 'backlog' : s === 'in_progress' ? 'in_progress' : 'done')">
+        {{ s === 'backlog' ? '← Backlog' : s === 'in_progress' ? (task.status === 'backlog' ? '→ In Progress' : '← In Progress') : '→ Done' }}
+      </button>
+    </ng-container>
+  </div>
+</ng-template>
+
+<!-- ===== MODAL: Add / Edit Task ===== -->
+<div class="modal-overlay" *ngIf="showTaskModal" (click)="closeModal()">
+  <div class="modal-box modal-large" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h5>{{ editingTask ? 'Edytuj task' : ('Nowy task — ' + addingToStatus) }}</h5>
+      <button class="modal-close" (click)="closeModal()">✕</button>
+    </div>
+
+    <form [formGroup]="taskForm" (ngSubmit)="submitTask()">
+      <div class="modal-body modal-grid">
+
+        <!-- Left -->
+        <div class="modal-col">
+          <div class="form-row">
+            <label class="form-label">Tytuł *</label>
+            <input class="form-input" type="text" formControlName="title" placeholder="Nazwa zadania">
           </div>
-          <div>
-            <label class="form-label">Termin</label>
-            <input class="form-input" type="date" formControlName="end_date">
+
+          <div class="form-row">
+            <label class="form-label">Opis</label>
+            <textarea class="form-input form-textarea" formControlName="description" placeholder="Opis (opcjonalnie)" rows="4"></textarea>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Priorytet</label>
+            <select class="form-input" formControlName="priority">
+              <option value="low">🟢 Low</option>
+              <option value="medium">🔵 Medium</option>
+              <option value="high">🟠 High</option>
+              <option value="critical">🔴 Critical</option>
+            </select>
+          </div>
+
+          <div class="form-row-dates">
+            <div class="form-row">
+              <label class="form-label">Data startu</label>
+              <input class="form-input" type="date" formControlName="start_date">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Termin (end date)</label>
+              <input class="form-input" type="date" formControlName="end_date">
+            </div>
           </div>
         </div>
+
+        <!-- Right -->
+        <div class="modal-col">
+          <div class="form-row">
+            <label class="form-label">Przypisz osoby</label>
+            <div class="check-list" *ngIf="members.length; else noMembers">
+              <label class="check-item" *ngFor="let m of members">
+                <input type="checkbox" [checked]="isAssigneeSelected(m.user_id)" (change)="toggleAssignee(m.user_id)">
+                <span class="check-avatar">{{ m.full_name[0].toUpperCase() }}</span>
+                {{ m.full_name }}
+              </label>
+            </div>
+            <ng-template #noMembers>
+              <span class="empty-hint">Brak członków w projekcie.</span>
+            </ng-template>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label">Etykiety</label>
+            <div class="check-list" *ngIf="labels.length; else noLabels">
+              <label class="check-item" *ngFor="let l of labels">
+                <input type="checkbox" [checked]="isLabelSelected(l.id)" (change)="toggleLabel(l.id)">
+                <span class="label-dot" [style.background]="l.color"></span>
+                {{ l.name }}
+              </label>
+            </div>
+            <ng-template #noLabels>
+              <span class="empty-hint">Brak etykiet — dodaj przez przycisk 🏷 Etykiety.</span>
+            </ng-template>
+          </div>
+        </div>
+
       </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeModal()">Anuluj</button>
-        <button type="submit" class="btn btn-primary" [disabled]="addTaskForm.invalid">Dodaj task</button>
+        <button type="submit" class="btn btn-primary" [disabled]="taskForm.invalid">
+          {{ editingTask ? 'Zapisz zmiany' : 'Dodaj task' }}
+        </button>
       </div>
     </form>
+
+  </div>
+</div>
+
+<!-- ===== MODAL: Etykiety ===== -->
+<div class="modal-overlay" *ngIf="showLabelModal" (click)="closeLabelModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h5>🏷 Zarządzanie etykietami</h5>
+      <button class="modal-close" (click)="closeLabelModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="label-list" *ngIf="labels.length">
+        <div class="label-row" *ngFor="let l of labels">
+          <span class="label-swatch" [style.background]="l.color"></span>
+          <span class="label-name">{{ l.name }}</span>
+          <button class="label-del-btn" (click)="deleteLabel(l, $event)">✕</button>
+        </div>
+      </div>
+      <p class="empty-hint" *ngIf="!labels.length">Brak etykiet. Dodaj pierwszą!</p>
+
+      <hr class="divider">
+
+      <form [formGroup]="labelForm" (ngSubmit)="submitLabel()">
+        <div class="form-row-dates">
+          <div class="form-row" style="flex:1">
+            <label class="form-label">Nazwa *</label>
+            <input class="form-input" type="text" formControlName="name" placeholder="np. Bug">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Kolor</label>
+            <input class="form-input form-color" type="color" formControlName="color">
+          </div>
+        </div>
+        <div class="modal-footer" style="padding: 10px 0 0; border: none;">
+          <button type="submit" class="btn btn-primary" [disabled]="labelForm.invalid">+ Dodaj etykietę</button>
+        </div>
+      </form>
+    </div>
+
   </div>
 </div>
