@@ -47,6 +47,7 @@
           <button class="btn-filter-reset" (click)="resetFilters()">Resetuj</button>
 
           <div class="filter-bar-right">
+            <button class="btn-labels" (click)="openMembersModal()">👥 Członkowie</button>
             <button class="btn-labels" (click)="openLabelModal()">🏷 Etykiety</button>
           </div>
         </div>
@@ -312,5 +313,63 @@
       </form>
     </div>
 
+  </div>
+</div>
+
+<!-- ===== MODAL: Członkowie projektu ===== -->
+<div class="modal-overlay" *ngIf="showMembersModal" (click)="closeMembersModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h5>👥 Członkowie projektu</h5>
+      <button class="modal-close" (click)="closeMembersModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="members-error" *ngIf="membersError">{{ membersError }}</div>
+
+      <!-- Aktualni członkowie -->
+      <p class="form-label" style="margin-bottom:6px">Aktualni członkowie</p>
+      <div class="member-list" *ngIf="members.length; else noMembersMsg">
+        <div class="member-row" *ngFor="let m of members">
+          <span class="check-avatar">{{ m.full_name[0].toUpperCase() }}</span>
+          <div class="member-info">
+            <span class="member-name">{{ m.full_name }}</span>
+            <span class="member-email">{{ m.email }}</span>
+          </div>
+          <span class="member-role-badge">{{ m.role }}</span>
+          <button class="label-del-btn" *ngIf="isAdmin" title="Usuń z projektu" (click)="removeMemberFromProject(m.user_id)">✕</button>
+        </div>
+      </div>
+      <ng-template #noMembersMsg>
+        <span class="empty-hint">Brak członków w tym projekcie.</span>
+      </ng-template>
+
+      <ng-container *ngIf="isAdmin">
+      <hr class="divider">
+
+      <!-- Dodaj użytkownika -->
+      <p class="form-label" style="margin-bottom:6px">Dodaj użytkownika do projektu</p>
+      <div class="member-list" *ngIf="nonMemberUsers().length; else allAdded">
+        <div class="member-row" *ngFor="let u of nonMemberUsers()">
+          <span class="check-avatar">{{ u.full_name[0].toUpperCase() }}</span>
+          <div class="member-info">
+            <span class="member-name">{{ u.full_name }}</span>
+            <span class="member-email">{{ u.email }}</span>
+          </div>
+          <button class="btn-add-member" (click)="addMemberToProject(u.id)">+ Dodaj</button>
+        </div>
+      </div>
+      <ng-template #allAdded>
+        <span class="empty-hint">Wszyscy użytkownicy są już członkami projektu.</span>
+      </ng-template>
+      </ng-container>
+
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeMembersModal()">Zamknij</button>
+    </div>
   </div>
 </div>

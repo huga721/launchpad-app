@@ -27,7 +27,7 @@
     </ng-template>
   </div>
 
-  <div class="sidebar-footer">
+  <div class="sidebar-footer" *ngIf="isAdmin">
     <button type="button" class="add-project-button" (click)="showModal = true">
       <i class="bi bi-plus-square"></i>
       <span>Nowy projekt</span>
@@ -35,7 +35,7 @@
   </div>
 </aside>
 
-<div class="modal-overlay" *ngIf="showModal" (click)="showModal = false">
+<div class="modal-overlay" *ngIf="showModal && isAdmin" (click)="showModal = false">
   <div class="modal-box" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h5>Nowy projekt</h5>

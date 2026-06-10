@@ -2,6 +2,7 @@ import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgForOf, NgIf} from "@angular/common";
 import {ProjectService} from "../services/project/project.service";
+import {AuthenticationService} from "../services/authentication/authentication.service";
 import {CreateProjectRequest, ProjectModel} from "../model/project-dto";
 
 @Component({
@@ -23,6 +24,7 @@ export class ProjectSidebarComponent implements OnInit {
 
   showModal = false;
   activeProjectId: string | null = null;
+  isAdmin = false;
 
   projects: ProjectModel[] = []
 
@@ -31,7 +33,10 @@ export class ProjectSidebarComponent implements OnInit {
     projectDescription: new FormControl('')
   })
 
-  constructor(private projectService: ProjectService) {}
+  constructor(
+    private projectService: ProjectService,
+    private authService: AuthenticationService,
+  ) {}
 
   ngOnInit(): void {
     this.projectService.getProjects()
@@ -39,6 +44,11 @@ export class ProjectSidebarComponent implements OnInit {
 
     this.projectService.activeProject$
       .subscribe(project => this.activeProjectId = project?.id ?? null)
+
+    this.authService.getMe().subscribe({
+      next: user => this.isAdmin = user.role === 'admin',
+      error: () => this.isAdmin = false,
+    });
   }
 
   closeSidebar(): void {

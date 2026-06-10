@@ -63,6 +63,8 @@ def list_projects(db: DB, current_user: CurrentUser):
 
 @router.post("", response_model=ProjectResponse, status_code=status.HTTP_201_CREATED)
 def create_project(body: ProjectCreate, db: DB, current_user: CurrentUser):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can create projects")
     project = Project(
         name=body.name,
         description=body.description,

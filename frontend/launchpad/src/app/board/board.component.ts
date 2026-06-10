@@ -8,6 +8,8 @@ import { ProjectService } from '../services/project/project.service';
 import { TaskService } from '../services/task/task.service';
 import { LabelService } from '../services/label/label.service';
 import { AuthenticationService } from '../services/authentication/authentication.service';
+import { AdminService } from '../services/admin/admin.service';
+import { UserResponse } from '../model/admin-dto';
 import { TaskCreate, TaskModel, TaskPriority, TaskStatus, TaskFilters, TaskUpdate } from '../model/task-dto';
 import { LabelModel } from '../model/label-dto';
 
@@ -25,6 +27,7 @@ export class BoardComponent implements OnInit {
   members: MemberModel[] = [];
   labels: LabelModel[] = [];
   currentUserId = '';
+  isAdmin = false;
 
   loading = false;
   activeTab: 'kanban' | 'management' = 'kanban';
@@ -36,6 +39,11 @@ export class BoardComponent implements OnInit {
 
   // Label modal
   showLabelModal = false;
+
+  // Members modal
+  showMembersModal = false;
+  allUsers: UserResponse[] = [];
+  membersError = '';
 
   // Drag & Drop
   draggedTask: TaskModel | null = null;
@@ -66,10 +74,16 @@ export class BoardComponent implements OnInit {
     private taskService: TaskService,
     private labelService: LabelService,
     private authService: AuthenticationService,
+    private adminService: AdminService,
   ) {}
 
   ngOnInit(): void {
-    this.authService.getMe().subscribe({ next: u => this.currentUserId = u.id });
+    this.authService.getMe().subscribe({
+      next: u => {
+        this.currentUserId = u.id;
+        this.isAdmin = u.role === 'admin';
+      }
+    });
     this.projectService.activeProject$.subscribe(project => {
       this.activeProject = project;
       if (project) { this.loadAll(project.id); }
@@ -275,6 +289,57 @@ export class BoardComponent implements OnInit {
     if (!this.activeProject || !confirm(`Usunąć etykietę "${label.name}"?`)) return;
     this.labelService.deleteLabel(this.activeProject.id, label.id).subscribe({
       next: () => { this.labels = this.labels.filter(l => l.id !== label.id); }
+    });
+  }
+
+  // ── Members management ───────────────────────────────────────
+  openMembersModal(): void {
+    this.membersError = '';
+    this.showMembersModal = true;
+    if (this.isAdmin) {
+      this.adminService.getUsers().subscribe({
+        next: users => this.allUsers = users,
+        error: () => this.allUsers = [],
+      });
+    }
+  }
+
+  closeMembersModal(): void {
+    this.showMembersModal = false;
+    this.membersError = '';
+  }
+
+  isMember(userId: string): boolean {
+    return this.members.some(m => m.user_id === userId);
+  }
+
+  nonMemberUsers(): UserResponse[] {
+    return this.allUsers.filter(u => !this.isMember(u.id));
+  }
+
+  addMemberToProject(userId: string): void {
+    if (!this.activeProject) return;
+    this.membersError = '';
+    this.projectService.addMember(this.activeProject.id, userId, 'editor').subscribe({
+      next: member => {
+        this.members = [...this.members, member];
+      },
+      error: err => {
+        this.membersError = err.error?.detail ?? 'Nie udało się dodać użytkownika.';
+      }
+    });
+  }
+
+  removeMemberFromProject(userId: string): void {
+    if (!this.activeProject) return;
+    this.membersError = '';
+    this.projectService.removeMember(this.activeProject.id, userId).subscribe({
+      next: () => {
+        this.members = this.members.filter(m => m.user_id !== userId);
+      },
+      error: err => {
+        this.membersError = err.error?.detail ?? 'Nie udało się usunąć użytkownika.';
+      }
     });
   }
 

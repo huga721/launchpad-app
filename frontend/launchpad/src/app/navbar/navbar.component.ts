@@ -28,6 +28,7 @@ export class NavbarComponent implements OnInit {
   userLoading = false;
   userError = '';
   activeTab: 'kanban' | 'management' = 'kanban';
+  isAdmin = false;
 
   constructor(
     private projectService: ProjectService,
@@ -101,5 +102,9 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     this.projectService.activeProject$.subscribe(project => this.activeProject = project);
+    this.authenticationService.getMe().subscribe({
+      next: user => this.isAdmin = user.role === 'admin',
+      error: () => this.isAdmin = false,
+    });
   }
 }
