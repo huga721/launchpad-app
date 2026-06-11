@@ -11,6 +11,7 @@ TaskPriority = Literal["low", "medium", "high", "critical"]
 class TaskAssigneeResponse(BaseModel):
     id: str
     full_name: str
+    is_active: bool
 
     class Config:
         from_attributes = True

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgFor, NgIf, NgClass } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AdminService } from '../services/admin/admin.service';
+import { AuthenticationService } from '../services/authentication/authentication.service';
 import { UserResponse } from '../model/admin-dto';
 
 @Component({
@@ -16,6 +17,7 @@ export class ManagementComponent implements OnInit {
   users: UserResponse[] = [];
   loading = false;
   errorMsg = '';
+  currentUserId = '';
 
   showAddModal = false;
   showEditModal = false;
@@ -34,15 +36,18 @@ export class ManagementComponent implements OnInit {
     password:  new FormControl(''),
   });
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private authService: AuthenticationService) {}
 
-  ngOnInit(): void { this.loadUsers(); }
+  ngOnInit(): void {
+    this.authService.getMe().subscribe(me => { this.currentUserId = me.id; });
+    this.loadUsers();
+  }
 
   loadUsers(): void {
     this.loading = true;
     this.adminService.getUsers().subscribe({
       next: users => { this.users = users; this.loading = false; },
-      error: () => { this.loading = false; this.errorMsg = 'Błąd ładowania użytkowników.'; }
+      error: () => { this.loading = false; this.errorMsg = 'Failed to load users.'; }
     });
   }
 
@@ -72,7 +77,7 @@ export class ManagementComponent implements OnInit {
       role:      this.addUserForm.value.role       ?? 'user',
     }).subscribe({
       next: user => { this.users = [...this.users, user]; this.closeAddModal(); },
-      error: err => { this.errorMsg = err.error?.detail ?? 'Błąd tworzenia użytkownika.'; }
+      error: err => { this.errorMsg = this.parseError(err, 'Failed to create user.'); }
     });
   }
 
@@ -107,19 +112,27 @@ export class ManagementComponent implements OnInit {
         this.users = this.users.map(u => u.id === updated.id ? updated : u);
         this.closeEditModal();
       },
-      error: err => { this.errorMsg = err.error?.detail ?? 'Błąd edycji.'; }
+      error: err => { this.errorMsg = this.parseError(err, 'Failed to update user.'); }
     });
   }
 
-  deleteUser(user: UserResponse): void {
-    if (!confirm(`Usunąć użytkownika ${user.full_name}?`)) return;
-    this.adminService.deleteUser(user.id).subscribe({
-      next: () => { this.users = this.users.filter(u => u.id !== user.id); },
-      error: err => { this.errorMsg = err.error?.detail ?? 'Błąd usuwania.'; }
+  toggleActive(user: UserResponse): void {
+    const action = user.is_active ? 'zablokować' : 'odblokować';
+    if (!confirm(`Czy na pewno chcesz ${action} użytkownika ${user.full_name}?`)) return;
+    this.adminService.updateUser(user.id, { is_active: !user.is_active }).subscribe({
+      next: updated => { this.users = this.users.map(u => u.id === updated.id ? updated : u); },
+      error: err => { this.errorMsg = this.parseError(err, 'Failed to update user status.'); }
     });
   }
 
   formatDate(d: string): string {
     return new Date(d).toLocaleDateString('pl-PL');
+  }
+
+  private parseError(err: { status?: number; error?: { detail?: unknown } }, fallback: string): string {
+    if (err.status === 422) return 'Invalid input data.';
+    const detail = err.error?.detail;
+    if (typeof detail === 'string') return detail;
+    return fallback;
   }
 }

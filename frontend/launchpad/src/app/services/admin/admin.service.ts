@@ -19,11 +19,7 @@ export class AdminService {
     return this.httpClient.post<UserResponse>(`${this.apiUrl}/admin/users`, data);
   }
 
-  updateUser(userId: string, data: { password?: string; role?: string; full_name?: string }): Observable<UserResponse> {
+  updateUser(userId: string, data: { password?: string; role?: string; full_name?: string; is_active?: boolean }): Observable<UserResponse> {
     return this.httpClient.patch<UserResponse>(`${this.apiUrl}/admin/users/${userId}`, data);
-  }
-
-  deleteUser(userId: string): Observable<void> {
-    return this.httpClient.delete<void>(`${this.apiUrl}/admin/users/${userId}`);
   }
 }

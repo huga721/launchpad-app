@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthenticationService } from '../services/authentication/authentication.service';
 import { AuthRequest } from '../model/authentication-dto';
-import {Router, RouterLink} from "@angular/router";
-import {routes} from "../app.routes";
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-authentication',
@@ -19,6 +18,8 @@ export class AuthenticationComponent {
     password: new FormControl('')
   });
 
+  errorMsg = '';
+
   constructor(
   private authenticationService: AuthenticationService,
   private router: Router) {}
@@ -29,13 +30,15 @@ export class AuthenticationComponent {
       password: this.loginForm.value.password ?? ''
     };
 
+    this.errorMsg = '';
     this.authenticationService.authenticateUser(authRequest).subscribe({
-      next: (result) => {
-        console.log('Authenticated user ' + result.access_token);
-        this.router.navigate(['/board'])
-      },
+      next: () => { this.router.navigate(['/board']); },
       error: (err) => {
-        console.error('Failed authentication ' + err);
+        if (err.status === 422) {
+          this.errorMsg = 'Invalid email or password.';
+        } else {
+          this.errorMsg = err.error?.detail ?? 'Login failed.';
+        }
       }
     });
   }

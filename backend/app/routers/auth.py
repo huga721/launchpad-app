@@ -37,6 +37,8 @@ def login(body: LoginRequest, db: DB):
     user = db.scalar(select(User).where(User.email == body.email))
     if not user or not verify_password(body.password, user.password_hash):
         raise HTTPException(401, "Invalid credentials")
+    if not user.is_active:
+        raise HTTPException(403, "Account is deactivated")
     return TokenResponse(access_token=create_access_token(user.id))
 
 
@@ -57,7 +59,7 @@ def update_me(body: UpdateMeRequest, current_user: CurrentUser, db: DB):
 
 @router.get("/users", response_model=list[PublicUserResponse])
 def list_users(db: DB, current_user: CurrentUser, search: str = ""):
-    query = select(User.id, User.full_name)
+    query = select(User.id, User.full_name).where(User.is_active.is_(True))
     if search:
         query = query.where(User.full_name.ilike(f"%{search}%"))
     rows = db.execute(query).all()

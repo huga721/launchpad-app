@@ -44,6 +44,10 @@
           </div>
         </div>
 
+        @if (errorMsg) {
+          <div class="lp-error">{{ errorMsg }}</div>
+        }
+
         <div class="lp-card-footer">
           <!-- Register -->
           <div>

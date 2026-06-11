@@ -27,6 +27,7 @@ class MemberResponse(BaseModel):
     user_id: str
     full_name: str
     email: str
+    is_active: bool
     role: Literal["owner", "editor", "viewer"]
     joined_at: datetime
 

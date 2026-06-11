@@ -138,6 +138,8 @@
   display: flex; align-items: center; justify-content: center;
   cursor: default;
 }
+.avatar-blocked { background: #b91c1c; }
+.name-blocked { color: #b91c1c !important; font-weight: 600; }
 
 .card-footer-actions { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
 .move-btn {

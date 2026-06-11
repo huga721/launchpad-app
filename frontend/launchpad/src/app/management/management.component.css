@@ -39,11 +39,15 @@
   padding: 4px 10px; border-radius: 5px; font-size: 0.82rem; font-weight: 500; cursor: pointer;
 }
 .btn-edit:hover { background: #bae6fd; }
-.btn-del {
-  background: #fee2e2; color: #b91c1c; border: none;
-  padding: 4px 10px; border-radius: 5px; font-size: 0.82rem; font-weight: 500; cursor: pointer;
-}
-.btn-del:hover { background: #fecaca; }
+.status-badge   { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.77rem; font-weight: 700; }
+.status-active  { background: #dcfce7; color: #15803d; }
+.status-blocked { background: #fee2e2; color: #b91c1c; }
+
+.btn-block         { background: #fef3c7; color: #92400e; border: none; padding: 4px 10px; border-radius: 5px; font-size: 0.82rem; font-weight: 500; cursor: pointer; }
+.btn-block:hover   { background: #fde68a; }
+.btn-unblock       { background: #dcfce7; color: #15803d; border: none; padding: 4px 10px; border-radius: 5px; font-size: 0.82rem; font-weight: 500; cursor: pointer; }
+.btn-unblock:hover { background: #bbf7d0; }
+.btn-block:disabled, .btn-unblock:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .empty-msg   { text-align: center; color: #94a3b8; padding: 32px; }
 .loading-msg { text-align: center; color: #64748b; padding: 32px; }

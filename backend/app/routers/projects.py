@@ -125,6 +125,7 @@ def list_members(project_id: str, db: DB, current_user: CurrentUser):
             user_id=m.user_id,
             full_name=m.user.full_name,
             email=m.user.email,
+            is_active=m.user.is_active,
             role=m.role,
             joined_at=m.joined_at,
         )
@@ -154,6 +155,7 @@ def add_member(project_id: str, body: AddMemberRequest, db: DB, current_user: Cu
         user_id=new_member.user_id,
         full_name=target_user.full_name,
         email=target_user.email,
+        is_active=target_user.is_active,
         role=new_member.role,
         joined_at=new_member.joined_at,
     )
@@ -183,6 +185,7 @@ def update_member_role(project_id: str, user_id: str, body: UpdateMemberRequest,
         user_id=target.user_id,
         full_name=target.user.full_name,
         email=target.user.email,
+        is_active=target.user.is_active,
         role=target.role,
         joined_at=target.joined_at,
     )

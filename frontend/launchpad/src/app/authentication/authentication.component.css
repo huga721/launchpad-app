@@ -109,3 +109,8 @@
 .lp-btn:hover {
   opacity: 0.8;
 }
+
+.lp-error {
+  color: #b91c1c; font-size: 0.85rem; text-align: center;
+  background: #fee2e2; border-radius: 6px; padding: 8px 12px;
+}

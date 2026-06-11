@@ -14,3 +14,4 @@ class AdminUpdateUserRequest(BaseModel):
     full_name: str | None = None
     role: Literal["admin", "user"] | None = None
     password: str | None = None
+    is_active: bool | None = None

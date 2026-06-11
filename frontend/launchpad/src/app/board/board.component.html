@@ -31,7 +31,7 @@
 
           <select class="filter-select" [(ngModel)]="filterAssignee">
             <option value="">Osoba: Wszystkie</option>
-            <option *ngFor="let m of members" [value]="m.user_id">{{ m.full_name }}</option>
+            <option *ngFor="let m of members" [value]="m.user_id">{{ m.full_name }}{{ !m.is_active ? ' (zablokowany)' : '' }}</option>
           </select>
 
           <select class="filter-select" [(ngModel)]="filterLabel">
@@ -171,7 +171,9 @@
   </div>
 
   <div class="card-assignees" *ngIf="task.assignees.length">
-    <span class="assignee-avatar" *ngFor="let a of task.assignees" [title]="a.full_name">
+    <span class="assignee-avatar" *ngFor="let a of task.assignees"
+      [title]="a.is_active ? a.full_name : a.full_name + ' (zablokowany)'"
+      [class.avatar-blocked]="!a.is_active">
       {{ a.full_name[0].toUpperCase() }}
     </span>
   </div>
@@ -236,11 +238,13 @@
           <div class="form-row">
             <label class="form-label">Przypisz osoby</label>
             <div class="check-list" *ngIf="members.length; else noMembers">
-              <label class="check-item" *ngFor="let m of members">
-                <input type="checkbox" [checked]="isAssigneeSelected(m.user_id)" (change)="toggleAssignee(m.user_id)">
-                <span class="check-avatar">{{ m.full_name[0].toUpperCase() }}</span>
-                {{ m.full_name }}
-              </label>
+              <ng-container *ngFor="let m of members">
+                <label class="check-item" *ngIf="m.is_active || isAssigneeSelected(m.user_id)">
+                  <input type="checkbox" [checked]="isAssigneeSelected(m.user_id)" (change)="toggleAssignee(m.user_id)">
+                  <span class="check-avatar" [class.avatar-blocked]="!m.is_active">{{ m.full_name[0].toUpperCase() }}</span>
+                  <span [class.name-blocked]="!m.is_active">{{ m.full_name }}{{ !m.is_active ? ' (zablokowany)' : '' }}</span>
+                </label>
+              </ng-container>
             </div>
             <ng-template #noMembers>
               <span class="empty-hint">Brak członków w projekcie.</span>
@@ -333,9 +337,9 @@
       <p class="form-label" style="margin-bottom:6px">Aktualni członkowie</p>
       <div class="member-list" *ngIf="members.length; else noMembersMsg">
         <div class="member-row" *ngFor="let m of members">
-          <span class="check-avatar">{{ m.full_name[0].toUpperCase() }}</span>
+          <span class="check-avatar" [class.avatar-blocked]="!m.is_active">{{ m.full_name[0].toUpperCase() }}</span>
           <div class="member-info">
-            <span class="member-name">{{ m.full_name }}</span>
+            <span class="member-name" [class.name-blocked]="!m.is_active">{{ m.full_name }}{{ !m.is_active ? ' (zablokowany)' : '' }}</span>
             <span class="member-email">{{ m.email }}</span>
           </div>
           <span class="member-role-badge">{{ m.role }}</span>
@@ -353,9 +357,9 @@
       <p class="form-label" style="margin-bottom:6px">Dodaj użytkownika do projektu</p>
       <div class="member-list" *ngIf="nonMemberUsers().length; else allAdded">
         <div class="member-row" *ngFor="let u of nonMemberUsers()">
-          <span class="check-avatar">{{ u.full_name[0].toUpperCase() }}</span>
+          <span class="check-avatar" [class.avatar-blocked]="!u.is_active">{{ u.full_name[0].toUpperCase() }}</span>
           <div class="member-info">
-            <span class="member-name">{{ u.full_name }}</span>
+            <span class="member-name" [class.name-blocked]="!u.is_active">{{ u.full_name }}{{ !u.is_active ? ' (zablokowany)' : '' }}</span>
             <span class="member-email">{{ u.email }}</span>
           </div>
           <button class="btn-add-member" (click)="addMemberToProject(u.id)">+ Dodaj</button>

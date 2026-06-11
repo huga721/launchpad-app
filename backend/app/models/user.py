@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import String, DateTime
+from sqlalchemy import Boolean, String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base, _uuid, _now
@@ -15,6 +15,7 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(20), nullable=False, default="user")
     # "admin" | "user"  (role values)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
 
     project_members: Mapped[list["ProjectMember"]] = relationship(back_populates="user")

@@ -15,6 +15,7 @@ export interface MemberModel {
   user_id: string;
   full_name: string;
   email: string;
+  is_active: boolean;
   role: string;
   joined_at: string;
 }

@@ -4,6 +4,7 @@ export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
 export interface TaskAssignee {
   id: string;
   full_name: string;
+  is_active: boolean;
 }
 
 export interface TaskLabel {
