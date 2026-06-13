@@ -57,7 +57,7 @@ class TaskResponse(BaseModel):
     title: str
     description: str | None
     project_id: str
-    creator_id: str
+    creator_id: str | None
     status: TaskStatus
     priority: TaskPriority
     start_date: date | None

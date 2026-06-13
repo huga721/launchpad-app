@@ -116,6 +116,14 @@ export class ManagementComponent implements OnInit {
     });
   }
 
+  deleteUser(user: UserResponse): void {
+    if (!confirm(`Czy na pewno chcesz usunąć użytkownika ${user.full_name}? Tej operacji nie można cofnąć.`)) return;
+    this.adminService.deleteUser(user.id).subscribe({
+      next: () => { this.users = this.users.filter(u => u.id !== user.id); },
+      error: err => { this.errorMsg = this.parseError(err, 'Failed to delete user.'); }
+    });
+  }
+
   toggleActive(user: UserResponse): void {
     const action = user.is_active ? 'zablokować' : 'odblokować';
     if (!confirm(`Czy na pewno chcesz ${action} użytkownika ${user.full_name}?`)) return;

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
 
 from ..auth.utils import hash_password
@@ -13,7 +13,9 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 
 @router.get("/users", response_model=list[UserResponse])
 def list_users(db: DB, _: AdminUser, skip: int = 0, limit: int = 100):
-    return db.scalars(select(User).order_by(User.created_at).offset(skip).limit(limit)).all()
+    return db.scalars(
+        select(User).order_by(User.created_at).offset(skip).limit(limit)
+    ).all()
 
 
 @router.post("/users", response_model=UserResponse, status_code=201)
@@ -33,7 +35,9 @@ def create_user(body: AdminCreateUserRequest, db: DB, _: AdminUser):
 
 
 @router.patch("/users/{user_id}", response_model=UserResponse)
-def update_user(user_id: str, body: AdminUpdateUserRequest, db: DB, current_user: AdminUser):
+def update_user(
+    user_id: str, body: AdminUpdateUserRequest, db: DB, current_user: AdminUser
+):
     user = db.get(User, user_id)
     if not user:
         raise HTTPException(404, "User not found")
@@ -49,3 +53,13 @@ def update_user(user_id: str, body: AdminUpdateUserRequest, db: DB, current_user
         user.is_active = body.is_active
     db.commit()
     return user
+
+
+@router.delete("/users/{user_id}", status_code=204)
+def delete_user(user_id: str, db: DB, current_user: AdminUser):
+    if user_id == current_user.id:
+        raise HTTPException(400, "Cannot delete your own account")
+    result = db.execute(delete(User).where(User.id == user_id))
+    if result.rowcount == 0:
+        raise HTTPException(404, "User not found")
+    db.commit()

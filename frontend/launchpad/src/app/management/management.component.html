@@ -36,12 +36,19 @@
         </td>
         <td>{{ formatDate(user.created_at) }}</td>
         <td class="actions-cell">
-          <button class="btn-edit" (click)="openEditModal(user)">Edytuj</button>
+          <button class="btn-action btn-edit" (click)="openEditModal(user)">Edytuj</button>
           <button
+            class="btn-action"
             [ngClass]="user.is_active ? 'btn-block' : 'btn-unblock'"
             [disabled]="user.id === currentUserId"
             (click)="toggleActive(user)">
             {{ user.is_active ? 'Zablokuj' : 'Odblokuj' }}
+          </button>
+          <button
+            class="btn-action btn-delete"
+            [disabled]="user.id === currentUserId"
+            (click)="deleteUser(user)">
+            Usuń
           </button>
         </td>
       </tr>

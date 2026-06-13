@@ -18,7 +18,7 @@ export interface TaskModel {
   title: string;
   description: string | null;
   project_id: string;
-  creator_id: string;
+  creator_id: string | null;
   status: TaskStatus;
   priority: TaskPriority;
   start_date: string | null;

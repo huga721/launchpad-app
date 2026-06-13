@@ -7,7 +7,7 @@ export interface ProjectModel {
   id: string;
   name: string;
   description: string;
-  owner_id: string;
+  owner_id: string | null;
   created_at: string;
 }
 
