@@ -17,8 +17,29 @@
         class="project-item"
         [class.project-item-active]="project.id === activeProjectId"
         (click)="selectProject(project)">
-        <div class="project-name">{{ project.name }}</div>
-        <div class="project-description">{{ project.description || 'Brak opisu projektu' }}</div>
+
+        <div class="project-item-content">
+          <div class="project-name">{{ project.name }}</div>
+          <div class="project-description">{{ project.description || 'Brak opisu projektu' }}</div>
+        </div>
+
+        <div class="project-item-actions" *ngIf="isAdmin" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            class="item-btn item-btn-edit"
+            title="Edytuj projekt"
+            (click)="openEditModal($event, project)">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button
+            type="button"
+            class="item-btn item-btn-delete"
+            title="Usuń projekt"
+            (click)="openDeleteModal($event, project)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+
       </li>
     </ul>
 
@@ -28,38 +49,79 @@
   </div>
 
   <div class="sidebar-footer" *ngIf="isAdmin">
-    <button type="button" class="add-project-button" (click)="showModal = true">
+    <button type="button" class="add-project-button" (click)="openCreateModal()">
       <i class="bi bi-plus-square"></i>
       <span>Nowy projekt</span>
     </button>
   </div>
 </aside>
 
-<div class="modal-overlay" *ngIf="showModal && isAdmin" (click)="showModal = false">
+<div class="modal-overlay" *ngIf="showCreateModal && isAdmin" (click)="showCreateModal = false">
   <div class="modal-box" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h5>Nowy projekt</h5>
+      <button type="button" class="modal-close" (click)="showCreateModal = false">✕</button>
     </div>
-
     <form [formGroup]="createProjectForm" (ngSubmit)="addProject()">
       <div class="modal-body">
         <div class="form-row">
-          <label class="form-label">Nazwa projektu</label>
+          <label class="form-label">Nazwa projektu *</label>
           <input class="form-input" type="text" formControlName="projectName" placeholder="Np. Launchpad Mobile" />
         </div>
-
         <div class="form-row">
           <label class="form-label">Opis projektu</label>
           <input class="form-input" type="text" formControlName="projectDescription" placeholder="Krótki opis" />
         </div>
       </div>
-
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="showModal = false">Anuluj</button>
+        <button type="button" class="btn btn-secondary" (click)="showCreateModal = false">Anuluj</button>
         <button type="submit" class="btn btn-primary" [disabled]="createProjectForm.invalid">Dodaj projekt</button>
       </div>
-
     </form>
   </div>
+</div>
 
+<div class="modal-overlay" *ngIf="showEditModal && isAdmin" (click)="closeEditModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>Edytuj projekt</h5>
+      <button type="button" class="modal-close" (click)="closeEditModal()">✕</button>
+    </div>
+    <form [formGroup]="editProjectForm" (ngSubmit)="submitEditProject()">
+      <div class="modal-body">
+        <div class="form-row">
+          <label class="form-label">Nazwa projektu *</label>
+          <input class="form-input" type="text" formControlName="projectName" placeholder="Nazwa projektu" />
+        </div>
+        <div class="form-row">
+          <label class="form-label">Opis projektu</label>
+          <input class="form-input" type="text" formControlName="projectDescription" placeholder="Krótki opis" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Anuluj</button>
+        <button type="submit" class="btn btn-primary" [disabled]="editProjectForm.invalid">Zapisz zmiany</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showDeleteModal && isAdmin" (click)="closeDeleteModal()">
+  <div class="modal-box modal-box-sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>Usuń projekt</h5>
+      <button type="button" class="modal-close" (click)="closeDeleteModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="confirm-text">
+        Czy na pewno chcesz usunąć projekt
+        <strong>„{{ deletingProject?.name }}"</strong>?
+        Wszystkie zadania i dane projektu zostaną trwale usunięte. Tej operacji nie można cofnąć.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">Anuluj</button>
+      <button type="button" class="btn btn-danger" (click)="confirmDeleteProject()">Usuń projekt</button>
+    </div>
+  </div>
 </div>

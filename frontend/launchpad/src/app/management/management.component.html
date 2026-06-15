@@ -25,9 +25,9 @@
         <td>{{ user.full_name }}</td>
         <td>{{ user.email }}</td>
         <td>
-            <span class="role-badge" [ngClass]="user.role === 'admin' ? 'role-admin' : 'role-user'">
-              {{ user.role === 'admin' ? 'Administrator' : 'User' }}
-            </span>
+          <span class="role-badge" [ngClass]="user.role === 'admin' ? 'role-admin' : 'role-user'">
+            {{ user.role === 'admin' ? 'Administrator' : 'User' }}
+          </span>
         </td>
         <td>
           <span class="status-badge" [ngClass]="user.is_active ? 'status-active' : 'status-blocked'">
@@ -47,7 +47,7 @@
           <button
             class="btn-action btn-delete"
             [disabled]="user.id === currentUserId"
-            (click)="deleteUser(user)">
+            (click)="openDeleteModal(user)">
             Usuń
           </button>
         </td>
@@ -61,7 +61,6 @@
 
 </div>
 
-<!-- Modal: Nowy użytkownik -->
 <div class="modal-overlay" *ngIf="showAddModal" (click)="closeAddModal()">
   <div class="modal-box" (click)="$event.stopPropagation()">
     <div class="modal-header">
@@ -70,18 +69,46 @@
     </div>
     <form [formGroup]="addUserForm" (ngSubmit)="submitAddUser()">
       <div class="modal-body">
+
         <div class="form-row">
           <label class="form-label">Imię i nazwisko *</label>
-          <input class="form-input" type="text" formControlName="full_name" placeholder="Jan Kowalski">
+          <input class="form-input" type="text" formControlName="full_name" placeholder="Jan Kowalski"
+                 [class.input-error]="addUserForm.get('full_name')?.invalid && addUserForm.get('full_name')?.touched">
+          <div class="field-error" *ngIf="addUserForm.get('full_name')?.invalid && addUserForm.get('full_name')?.touched">
+            Imię i nazwisko jest wymagane.
+          </div>
         </div>
+
         <div class="form-row">
           <label class="form-label">E-mail *</label>
-          <input class="form-input" type="email" formControlName="email" placeholder="jan@example.com">
+          <input class="form-input" type="email" formControlName="email" placeholder="jan@example.com"
+                 [class.input-error]="addUserForm.get('email')?.invalid && addUserForm.get('email')?.touched">
+          <div class="field-error" *ngIf="addUserForm.get('email')?.invalid && addUserForm.get('email')?.touched">
+            Podaj poprawny adres e-mail.
+          </div>
         </div>
+
         <div class="form-row">
           <label class="form-label">Hasło * (min. 6 znaków)</label>
-          <input class="form-input" type="password" formControlName="password" placeholder="••••••••">
+          <input class="form-input" type="password" formControlName="password" placeholder="••••••••"
+                 [class.input-error]="addUserForm.get('password')?.invalid && addUserForm.get('password')?.touched">
+          <div class="field-error" *ngIf="addUserForm.get('password')?.invalid && addUserForm.get('password')?.touched">
+            Hasło musi mieć minimum 6 znaków.
+          </div>
         </div>
+
+        <div class="form-row">
+          <label class="form-label">Powtórz hasło *</label>
+          <input class="form-input" type="password" formControlName="confirmPassword" placeholder="••••••••"
+                 [class.input-error]="(addUserForm.get('confirmPassword')?.invalid && addUserForm.get('confirmPassword')?.touched) || addPasswordMismatch">
+          <div class="field-error" *ngIf="addUserForm.get('confirmPassword')?.invalid && addUserForm.get('confirmPassword')?.touched">
+            Potwierdzenie hasła jest wymagane.
+          </div>
+          <div class="field-error" *ngIf="!addUserForm.get('confirmPassword')?.invalid && addPasswordMismatch">
+            Hasła muszą być identyczne.
+          </div>
+        </div>
+
         <div class="form-row">
           <label class="form-label">Rola</label>
           <select class="form-input" formControlName="role">
@@ -89,17 +116,17 @@
             <option value="admin">Administrator</option>
           </select>
         </div>
+
         <div class="error-msg" *ngIf="errorMsg" style="margin-top:4px">{{ errorMsg }}</div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeAddModal()">Anuluj</button>
-        <button type="submit"  class="btn btn-primary"  [disabled]="addUserForm.invalid">Dodaj</button>
+        <button type="submit" class="btn btn-primary">Dodaj</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Modal: Edytuj użytkownika -->
 <div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
   <div class="modal-box" (click)="$event.stopPropagation()">
     <div class="modal-header">
@@ -108,10 +135,16 @@
     </div>
     <form [formGroup]="editUserForm" (ngSubmit)="submitEditUser()">
       <div class="modal-body">
+
         <div class="form-row">
           <label class="form-label">Imię i nazwisko *</label>
-          <input class="form-input" type="text" formControlName="full_name">
+          <input class="form-input" type="text" formControlName="full_name"
+                 [class.input-error]="editUserForm.get('full_name')?.invalid && editUserForm.get('full_name')?.touched">
+          <div class="field-error" *ngIf="editUserForm.get('full_name')?.invalid && editUserForm.get('full_name')?.touched">
+            Imię i nazwisko jest wymagane.
+          </div>
         </div>
+
         <div class="form-row">
           <label class="form-label">Rola</label>
           <select class="form-input" formControlName="role">
@@ -119,16 +152,50 @@
             <option value="admin">Administrator</option>
           </select>
         </div>
+
         <div class="form-row">
-          <label class="form-label">Nowe hasło (zostaw puste, aby nie zmieniać)</label>
+          <label class="form-label">Nowe hasło <span class="optional">(zostaw puste, aby nie zmieniać)</span></label>
           <input class="form-input" type="password" formControlName="password" placeholder="••••••••">
         </div>
+
+        <div class="form-row">
+          <label class="form-label">Powtórz nowe hasło</label>
+          <input class="form-input" type="password" formControlName="confirmPassword" placeholder="••••••••"
+                 [class.input-error]="editPasswordMismatch">
+          <div class="field-error" *ngIf="editPasswordMismatch">
+            Hasła muszą być identyczne.
+          </div>
+        </div>
+
         <div class="error-msg" *ngIf="errorMsg" style="margin-top:4px">{{ errorMsg }}</div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Anuluj</button>
-        <button type="submit"  class="btn btn-primary"  [disabled]="editUserForm.invalid">Zapisz</button>
+        <button type="submit" class="btn btn-primary" [disabled]="editUserForm.invalid">Zapisz</button>
       </div>
     </form>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+  <div class="modal-box modal-box-sm" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>Usuń użytkownika</h5>
+      <button class="modal-close" (click)="closeDeleteModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="confirm-text">
+        Czy na pewno chcesz usunąć użytkownika
+        <strong>{{ userToDelete?.full_name }}</strong>
+        (<em>{{ userToDelete?.email }}</em>)?
+      </p>
+      <p class="confirm-note">
+        Projekty utworzone przez tego użytkownika pozostaną w systemie i będą nadal dostępne dla uprawnionych użytkowników.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">Anuluj</button>
+      <button type="button" class="btn btn-danger" (click)="confirmDeleteUser()">Usuń użytkownika</button>
+    </div>
   </div>
 </div>

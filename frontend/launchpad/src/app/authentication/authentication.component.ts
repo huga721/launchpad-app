@@ -21,8 +21,9 @@ export class AuthenticationComponent {
   errorMsg = '';
 
   constructor(
-  private authenticationService: AuthenticationService,
-  private router: Router) {}
+    private authenticationService: AuthenticationService,
+    private router: Router
+  ) {}
 
   authenticateUser() {
     const authRequest: AuthRequest = {
@@ -33,12 +34,8 @@ export class AuthenticationComponent {
     this.errorMsg = '';
     this.authenticationService.authenticateUser(authRequest).subscribe({
       next: () => { this.router.navigate(['/board']); },
-      error: (err) => {
-        if (err.status === 422) {
-          this.errorMsg = 'Invalid email or password.';
-        } else {
-          this.errorMsg = err.error?.detail ?? 'Login failed.';
-        }
+      error: () => {
+        this.errorMsg = 'Nieprawidłowa nazwa użytkownika lub hasło.';
       }
     });
   }

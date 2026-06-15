@@ -17,7 +17,15 @@ export class ProjectService {
     return this.httpClient.post<ProjectModel>(`${this.apiUrl}/projects`, request);
   }
 
-  setActiveProject(project: ProjectModel): void {
+  updateProject(projectId: string, data: { name?: string; description?: string }): Observable<ProjectModel> {
+    return this.httpClient.patch<ProjectModel>(`${this.apiUrl}/projects/${projectId}`, data);
+  }
+
+  deleteProject(projectId: string): Observable<void> {
+    return this.httpClient.delete<void>(`${this.apiUrl}/projects/${projectId}`);
+  }
+
+  setActiveProject(project: ProjectModel | null): void {
     this.projectSource.next(project);
   }
 
